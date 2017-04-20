@@ -40,7 +40,7 @@ public class Project {
 	 * @param name
 	 * @param author
 	 * @param totalDl
-	 * @param lastUpdated
+	 * @param updated
 	 * @param description
 	 * @param projectUrl
 	 * @param thumbnail
@@ -133,11 +133,11 @@ public class Project {
 	}
 
 	/**
-	 * @param lastUpdated
-	 *            the lastUpdated to set
+	 * @param updated
+	 *            the updated to set
 	 */
-	public void setUpdated(Date lastUpdated) {
-		this.updated = lastUpdated;
+	public void setUpdated(Date updated) {
+		this.updated = updated;
 	}
 
 	/**

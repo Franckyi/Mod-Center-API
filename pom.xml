@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.franckyi</groupId>
 	<artifactId>mod-center-api</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>The official API for the Mod Center database</description>
 	<url>https://github.com/Franckyi/Mod-Center-API</url>
@@ -64,6 +64,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9.1</version>
+				<configuration>
+					<additionalparam>-Xdoclint:none</additionalparam>
+				</configuration>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
