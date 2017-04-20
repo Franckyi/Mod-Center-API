@@ -26,7 +26,7 @@ public class Project {
 	private String name;
 	private String author;
 	private int totalDl;
-	private Date lastUpdated;
+	private Date updated;
 	private String description;
 	private String projectUrl;
 	private String thumbnail;
@@ -45,13 +45,13 @@ public class Project {
 	 * @param projectUrl
 	 * @param thumbnail
 	 */
-	public Project(int projectId, String name, String author, int totalDl, Date lastUpdated, String description,
+	public Project(int projectId, String name, String author, int totalDl, Date updated, String description,
 			String projectUrl, String thumbnail) {
 		this.projectId = projectId;
 		this.name = name;
 		this.author = author;
 		this.totalDl = totalDl;
-		this.lastUpdated = lastUpdated;
+		this.updated = updated;
 		this.description = description;
 		this.projectUrl = projectUrl;
 		this.thumbnail = thumbnail;
@@ -128,16 +128,16 @@ public class Project {
 	/**
 	 * @return the lastUpdated
 	 */
-	public Date getLastUpdated() {
-		return lastUpdated;
+	public Date getUpdated() {
+		return updated;
 	}
 
 	/**
 	 * @param lastUpdated
 	 *            the lastUpdated to set
 	 */
-	public void setLastUpdated(Date lastUpdated) {
-		this.lastUpdated = lastUpdated;
+	public void setUpdated(Date lastUpdated) {
+		this.updated = lastUpdated;
 	}
 
 	/**
