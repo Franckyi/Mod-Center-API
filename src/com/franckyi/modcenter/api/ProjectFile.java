@@ -1,6 +1,8 @@
 package com.franckyi.modcenter.api;
 
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * <p>
@@ -9,7 +11,7 @@ import java.sql.Date;
  * <ul>
  * <li>The file ID</li>
  * <li>The file name</li>
- * <li>The file type (as a {@link String})</li>
+ * <li>The file type (as an {@link EnumFileType})</li>
  * <li>The file size (as a {@link String})</li>
  * <li>The {@link Date} of upload</li>
  * <li>The Minecraft version of the file</li>
@@ -25,7 +27,7 @@ public class ProjectFile {
 
 	private int fileId;
 	private String fileName;
-	private String type;
+	private EnumFileType type;
 	private String size;
 	private Date uploaded;
 	private String version;
@@ -48,7 +50,7 @@ public class ProjectFile {
 	 * @param fileUrl
 	 * @param projectId
 	 */
-	public ProjectFile(int fileId, String fileName, String type, String size, Date uploaded, String version,
+	public ProjectFile(int fileId, String fileName, EnumFileType type, String size, Date uploaded, String version,
 			int downloads, String fileUrl, int projectId) {
 		this.fileId = fileId;
 		this.fileName = fileName;
@@ -67,6 +69,19 @@ public class ProjectFile {
 	 * </p>
 	 */
 	public ProjectFile() {
+	}
+
+	/**
+	 * <p>
+	 * A complete ProjectFile using a {@link ResultSet}.
+	 * </p>
+	 * 
+	 * @param results The results of a query
+	 * @throws SQLException
+	 */
+	public ProjectFile(ResultSet results) throws SQLException {
+		this(results.getInt(1), results.getString(2), EnumFileType.toType(results.getString(3)), results.getString(4), results.getDate(5),
+				results.getString(6), results.getInt(7), results.getString(8), results.getInt(9));
 	}
 
 	/**
@@ -102,7 +117,7 @@ public class ProjectFile {
 	/**
 	 * @return the type
 	 */
-	public String getType() {
+	public EnumFileType getType() {
 		return type;
 	}
 
@@ -110,7 +125,7 @@ public class ProjectFile {
 	 * @param type
 	 *            the type to set
 	 */
-	public void setType(String type) {
+	public void setType(EnumFileType type) {
 		this.type = type;
 	}
 

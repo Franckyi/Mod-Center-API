@@ -1,6 +1,9 @@
 package com.franckyi.modcenter.api;
 
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * <p>
@@ -15,6 +18,7 @@ import java.sql.Date;
  * <li>The description of the project</li>
  * <li>The project URL (as a {@link String})</li>
  * <li>The thumbnail URL (as a {@link String})</li>
+ * <li>The list of {@link EnumCategory}</li>
  * </ul>
  * 
  * @author Franckyi
@@ -30,6 +34,7 @@ public class Project {
 	private String description;
 	private String projectUrl;
 	private String thumbnail;
+	private List<EnumCategory> categories;
 
 	/**
 	 * <p>
@@ -44,9 +49,10 @@ public class Project {
 	 * @param description
 	 * @param projectUrl
 	 * @param thumbnail
+	 * @param categories
 	 */
 	public Project(int projectId, String name, String author, int totalDl, Date updated, String description,
-			String projectUrl, String thumbnail) {
+			String projectUrl, String thumbnail, List<EnumCategory> categories) {
 		this.projectId = projectId;
 		this.name = name;
 		this.author = author;
@@ -55,6 +61,7 @@ public class Project {
 		this.description = description;
 		this.projectUrl = projectUrl;
 		this.thumbnail = thumbnail;
+		this.categories = categories;
 	}
 
 	/**
@@ -63,6 +70,20 @@ public class Project {
 	 * </p>
 	 */
 	public Project() {
+	}
+
+	/**
+	 * <p>
+	 * A complete Project using a {@link ResultSet}.
+	 * </p>
+	 * 
+	 * @param results
+	 *            The results of a query
+	 * @throws SQLException
+	 */
+	public Project(ResultSet results) throws SQLException {
+		this(results.getInt(1), results.getString(2), results.getString(3), results.getInt(4), results.getDate(5),
+				results.getString(6), results.getString(7), results.getString(8), EnumCategory.format(results.getString(9)));
 	}
 
 	/**
@@ -183,6 +204,20 @@ public class Project {
 	 */
 	public void setThumbnail(String thumbnail) {
 		this.thumbnail = thumbnail;
+	}
+
+	/**
+	 * @return the categories
+	 */
+	public List<EnumCategory> getCategories() {
+		return categories;
+	}
+
+	/**
+	 * @param categories the categories to set
+	 */
+	public void setCategories(List<EnumCategory> categories) {
+		this.categories = categories;
 	}
 
 }
