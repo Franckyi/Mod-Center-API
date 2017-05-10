@@ -1,9 +1,11 @@
-package com.franckyi.modcenter.api;
+package com.franckyi.modcenter.api.beans;
 
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
+import com.franckyi.modcenter.api.beans.enums.EnumCategory;
 
 /**
  * <p>

@@ -1,4 +1,6 @@
-package com.franckyi.modcenter.api;
+package com.franckyi.modcenter.api.beans;
+
+import com.franckyi.modcenter.api.beans.enums.EnumCategory;
 
 /**
  * <p>

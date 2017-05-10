@@ -1,4 +1,4 @@
-package com.franckyi.modcenter.api;
+package com.franckyi.modcenter.api.beans;
 
 /**
  * <p>

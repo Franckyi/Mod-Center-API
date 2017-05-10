@@ -1,4 +1,4 @@
-package com.franckyi.modcenter.api;
+package com.franckyi.modcenter.api.beans.enums;
 
 import java.util.ArrayList;
 import java.util.List;

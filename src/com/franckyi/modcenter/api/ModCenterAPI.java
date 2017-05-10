@@ -9,6 +9,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.franckyi.modcenter.api.beans.Project;
+import com.franckyi.modcenter.api.beans.ProjectFile;
+import com.franckyi.modcenter.api.beans.ProjectFilter;
+import com.franckyi.modcenter.api.beans.SortedProjectFilter;
+import com.franckyi.modcenter.api.beans.UpdateResult;
+import com.franckyi.modcenter.api.misc.VersionComparator;
+
 /**
  * <p>
  * The main class for the Mod Center API. This Class is used to get information
@@ -187,14 +194,14 @@ public class ModCenterAPI {
 
 	/**
 	 * <p>
-	 * Returns the number of pages of {@link Project}s for
-	 * a certain number of {@link Project}s per page.
+	 * Returns the number of pages of {@link Project}s for a certain number of
+	 * {@link Project}s per page.
 	 * </p>
 	 * 
 	 * @param count
 	 *            The number of {@link Project}s per page
 	 * @param filter
-	 *            The filtering to use in the query. 
+	 *            The filtering to use in the query.
 	 * @return The number of pages of {@link Project}s containing this keyword
 	 * @throws SQLException
 	 */
@@ -330,9 +337,17 @@ public class ModCenterAPI {
 			res.setLatestAlpha(new ProjectFile(set));
 		return res;
 	}
-	
+
 	public static Connection getConnection() {
 		return conn;
+	}
+
+	public static Project getProjectFromId(int id) throws SQLException {
+		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM projects WHERE projects.projectId = ?;");
+		stmt.setInt(1, id);
+		ResultSet results = stmt.executeQuery();
+		results.next();
+		return new Project(results);
 	}
 
 }
