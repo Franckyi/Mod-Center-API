@@ -3,8 +3,18 @@ package com.franckyi.modcenter.api.beans.enums;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.franckyi.modcenter.api.beans.Project;
+
+/**
+ * <p>
+ * Enum used to filter {@link Project}s by their category.
+ * </p>
+ * 
+ * @author Franckyi
+ *
+ */
 public enum EnumCategory {
-	
+
 	ANY("", "Any"),
 	ADDONS("mc-addons", "--- ADDONS ---"),
 	APPLIED_ENERGISTICS_ADDONS("applied-energistics-2", "--- Applied Energistics Addons", ADDONS),
@@ -39,17 +49,17 @@ public enum EnumCategory {
 	STRUCTURES_WORLD("world-structures", "--- Structures", WORLD_GEN),
 	API_LIBRARY("library-api", "API and Library"),
 	MISCELLANEOUS("mc-miscellaneous", "Miscellaneous");
-	
+
 	private static final String SPLITTER_CHAR = " ";
-	
+
 	private String dbKey, displayText;
 	private EnumCategory superCategory;
-	
+
 	private EnumCategory(String dbKey, String displayText) {
 		this.displayText = displayText;
 		this.dbKey = dbKey;
 	}
-	
+
 	private EnumCategory(String dbKey, String displayText, EnumCategory superCategory) {
 		this(dbKey, displayText);
 		this.superCategory = superCategory;
@@ -75,43 +85,80 @@ public enum EnumCategory {
 	public EnumCategory getSuperCategory() {
 		return superCategory;
 	}
-	
-	public static EnumCategory toCategory(String url) {
-		for(EnumCategory cat : values())
-			if(url.equals(cat.getDbKey()))
+
+	/**
+	 * <p>
+	 * Returns a category from a splitted category {@link String} that you got
+	 * from the database.
+	 * </p>
+	 * 
+	 * @param str
+	 *            The splitted category string
+	 * @return The category corresponding at this splitted category string.
+	 */
+	public static EnumCategory toCategory(String str) {
+		for (EnumCategory cat : values())
+			if (str.equals(cat.getDbKey()))
 				return cat;
 		return null;
 	}
-	
-	public static List<EnumCategory> format(String categories){
+
+	/**
+	 * <p>
+	 * Returns a {@link List} of categories from a category {@link String} that
+	 * you got from the database.
+	 * </p>
+	 * 
+	 * @param str
+	 *            The category string
+	 * @return The list of categories corresponding at this category string
+	 */
+	public static List<EnumCategory> format(String str) {
 		List<EnumCategory> list = new ArrayList<>();
-		for(String cat : categories.split(SPLITTER_CHAR)) {
+		for (String cat : str.split(SPLITTER_CHAR)) {
 			EnumCategory c = toCategory(cat);
-			if(c != null)
+			if (c != null)
 				list.add(c);
 		}
-		return list;	
+		return list;
 	}
-	
-	public static String format(List<EnumCategory> categories){
+
+	/**
+	 * <p>
+	 * Returns a category {@link String} from a {@link List} of categories that
+	 * can be used in the database.
+	 * </p>
+	 * 
+	 * @param categories
+	 *            The list of categories
+	 * @return The category string corresponding at this list of categories
+	 */
+	public static String format(List<EnumCategory> categories) {
 		String s = "";
-		for(EnumCategory cat : categories)	
+		for (EnumCategory cat : categories)
 			s += cat.getDbKey() + SPLITTER_CHAR;
 		return s.substring(0, s.length() - 1);
 	}
-	
+
+	/**
+	 * <p>
+	 * Returns the URL used to access to the projects of this category.
+	 * </p>
+	 * 
+	 * @return the URL
+	 */
 	public String toUrl() {
 		return this.getDbKey() + "/" + ((superCategory != null) ? this.getSuperCategory().getDbKey() : "");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Enum#toString()
 	 */
 	@Override
 	public String toString() {
 		return displayText;
 	}
-	
-	
 
 }

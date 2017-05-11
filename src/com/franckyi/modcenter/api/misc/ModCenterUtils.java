@@ -2,7 +2,15 @@ package com.franckyi.modcenter.api.misc;
 
 import java.util.HashMap;
 
+/**
+ * <p>
+ * An utility class. Contains a method to unescape HTML.
+ * </p>
+ * @author Franckyi
+ *
+ */
 public class ModCenterUtils {
+
 	private static HashMap<String, Integer> htmlEntities = new HashMap<>();
 
 	static {
@@ -260,6 +268,13 @@ public class ModCenterUtils {
 		htmlEntities.put("euro", new Integer(8364));
 	}
 
+	/**
+	 * <p>
+	 * Returns the HTML unescaped version of the string.
+	 * </p>
+	 * @param s The string
+	 * @return The unescaped string
+	 */
 	public static String unescapeHTML(String s) {
 		StringBuffer result = new StringBuffer(s.length());
 		int ampInd = s.indexOf("&");

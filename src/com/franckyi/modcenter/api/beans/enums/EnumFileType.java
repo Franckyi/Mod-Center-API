@@ -12,7 +12,10 @@ import com.franckyi.modcenter.api.beans.ProjectFile;
  */
 public enum EnumFileType {
 
-	ANY("", "Any"), ALPHA("ALPHA", "Alpha"), BETA("BETA", "Beta"), RELEASE("RELEASE", "Release");
+	ANY("", "Any"),
+	ALPHA("ALPHA", "Alpha"),
+	BETA("BETA", "Beta"),
+	RELEASE("RELEASE", "Release");
 
 	private String dbKey, displayText;
 
@@ -35,9 +38,19 @@ public enum EnumFileType {
 		return displayText;
 	}
 
+	/**
+	 * <p>
+	 * Returns a file type from a file type {@link String} that can be found in
+	 * the database.
+	 * </p>
+	 * 
+	 * @param string
+	 *            The file type string
+	 * @return The file type corresponding to this file type string
+	 */
 	public static EnumFileType toType(String string) {
-		for(EnumFileType type : values()){
-			if(type.getDbKey().equals(string))
+		for (EnumFileType type : values()) {
+			if (type.getDbKey().equals(string))
 				return type;
 		}
 		return ANY;

@@ -2,6 +2,15 @@ package com.franckyi.modcenter.api.misc;
 
 import java.util.Comparator;
 
+/**
+ * <p>
+ * This comparator is used to compare different version strings. For example in
+ * the Client, it's used to show an ordered list of versions.
+ * </p>
+ * 
+ * @author Franckyi
+ *
+ */
 public class VersionComparator implements Comparator<String> {
 
 	@Override

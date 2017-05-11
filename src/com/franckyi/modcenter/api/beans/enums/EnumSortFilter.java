@@ -4,14 +4,19 @@ import com.franckyi.modcenter.api.beans.SortedProjectFilter;
 
 /**
  * <p>
- * Enum used to build a {@link SortedProjectFilter}. Contains different types of sorting.
+ * Enum used to build a {@link SortedProjectFilter}. Contains different types of
+ * sorting.
  * </p>
+ * 
  * @author Franckyi
  *
  */
 public enum EnumSortFilter {
 
-	UPDATED("Date Updated", "updated"), TOTAL_DL("Total Downloads", "totalDl"), NAME("Name", "name"), CREATED("Date Created", "projectId");
+	UPDATED("Date Updated", "updated"),
+	TOTAL_DL("Total Downloads", "totalDl"),
+	NAME("Name", "name"),
+	CREATED("Date Created", "projectId");
 
 	private String text, value;
 

@@ -218,6 +218,13 @@ public class ModCenterAPI {
 		return results.getInt(1) / count + 1;
 	}
 
+	/**
+	 * <p>
+	 * Returns the list of all {@link ProjectFile}'s versions that can be found in the database.
+	 * </p>
+	 * @return The list of versions
+	 * @throws SQLException
+	 */
 	public static List<String> getVersions() throws SQLException {
 		List<String> list = new ArrayList<>();
 		ResultSet set = conn.createStatement().executeQuery("SELECT DISTINCT version FROM files;");
@@ -311,7 +318,14 @@ public class ModCenterAPI {
 			return " ASC";
 		return " DESC";
 	}
-
+	
+	/**
+	 * TODO : Updater
+	 * @param project
+	 * @param file
+	 * @return
+	 * @throws SQLException
+	 */
 	public static UpdateResult update(Project project, ProjectFile file) throws SQLException {
 		UpdateResult res = new UpdateResult();
 		PreparedStatement pstmt;
@@ -338,10 +352,24 @@ public class ModCenterAPI {
 		return res;
 	}
 
+	/**
+	 * <p>
+	 * Returns the connection object used to communicate with the database.
+	 * </p>
+	 * @return The connection
+	 */
 	public static Connection getConnection() {
 		return conn;
 	}
 
+	/**
+	 * <p>
+	 * Returns the project corresponding to the project ID.
+	 * </p>
+	 * @param id The project ID
+	 * @return The project
+	 * @throws SQLException
+	 */
 	public static Project getProjectFromId(int id) throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM projects WHERE projects.projectId = ?;");
 		stmt.setInt(1, id);
