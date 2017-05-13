@@ -78,12 +78,13 @@ public class ProjectFile {
 	 * A complete ProjectFile using a {@link ResultSet}.
 	 * </p>
 	 * 
-	 * @param results The results of a query
+	 * @param results
+	 *            The results of a query
 	 * @throws SQLException
 	 */
 	public ProjectFile(ResultSet results) throws SQLException {
-		this(results.getInt(1), results.getString(2), EnumFileType.toType(results.getString(3)), results.getString(4), results.getDate(5),
-				results.getString(6), results.getInt(7), results.getString(8), results.getInt(9));
+		this(results.getInt(1), results.getString(2), EnumFileType.toType(results.getString(3)), results.getString(4),
+				results.getDate(5), results.getString(6), results.getInt(7), results.getString(8), results.getInt(9));
 	}
 
 	/**

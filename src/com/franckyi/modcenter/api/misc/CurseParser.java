@@ -5,9 +5,9 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.Jsoup;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -42,11 +42,14 @@ public class CurseParser {
 	 * @param el
 	 *            The project element
 	 * @return The project corresponding to the project element
-	 * @throws Exception If the element is wrong
-	 * @throws IOException See {@link Connection#get}
+	 * @throws Exception
+	 *             If the element is wrong
+	 * @throws IOException
+	 *             See {@link Connection#get}
 	 */
 	public static Project getProject(Element el) throws Exception, IOException {
-		if(!el.is("li.project-list-item")) throw new Exception(WRONG_ELEMENT);
+		if (!el.is("li.project-list-item"))
+			throw new Exception(WRONG_ELEMENT);
 		Project p = new Project();
 		p.setName(ModCenterUtils
 				.unescapeHTML(((Element) ((Element) el.select("div.info.name").get(0)).select("a").get(0)).html()));
@@ -78,10 +81,12 @@ public class CurseParser {
 	 * @param el
 	 *            The file element
 	 * @return The project file corresponding to the file element
-	 * @throws Exception If the element is wrong
+	 * @throws Exception
+	 *             If the element is wrong
 	 */
 	public static ProjectFile getFile(Element el) throws Exception {
-		if(!el.is("tr.project-file-list-item")) throw new Exception(WRONG_ELEMENT);
+		if (!el.is("tr.project-file-list-item"))
+			throw new Exception(WRONG_ELEMENT);
 		ProjectFile f = new ProjectFile();
 		f.setFileId(Integer.parseInt(((Element) ((Element) el.select("div.project-file-name-container").get(0))
 				.select("a.overflow-tip").get(0)).attr("href").split("/")[4]));
@@ -108,10 +113,12 @@ public class CurseParser {
 	 * @param el
 	 *            The file element
 	 * @return The file type corresponding to the file element
-	 * @throws Exception If the element is wrong
+	 * @throws Exception
+	 *             If the element is wrong
 	 */
 	public static EnumFileType getType(Element el) throws Exception {
-		if(!el.is("tr.project-file-list-item")) throw new Exception(WRONG_ELEMENT);
+		if (!el.is("tr.project-file-list-item"))
+			throw new Exception(WRONG_ELEMENT);
 		if (el.select("div.release-phase.tip").size() == 1) {
 			return EnumFileType.RELEASE;
 		}
@@ -134,10 +141,12 @@ public class CurseParser {
 	 * @param el
 	 *            The project element
 	 * @return The list or categories corresponding to the project element
-	 * @throws Exception If the element is wrong
+	 * @throws Exception
+	 *             If the element is wrong
 	 */
 	public static List<EnumCategory> getCategories(Element el) throws Exception {
-		if(!el.is("li.project-list-item")) throw new Exception(WRONG_ELEMENT);
+		if (!el.is("li.project-list-item"))
+			throw new Exception(WRONG_ELEMENT);
 		List<EnumCategory> list = new ArrayList<>();
 		for (Element elm : el.select("div.category-icon-wrapper").get(0).children()) {
 			String url = elm.select("a").get(0).attr("href");
@@ -148,11 +157,15 @@ public class CurseParser {
 
 	/**
 	 * <p>
-	 * Returns the final URL of the project file stocked on the server. Should be used to download the project file.
+	 * Returns the final URL of the project file stocked on the server. Should
+	 * be used to download the project file.
 	 * </p>
-	 * @param file The project file
+	 * 
+	 * @param file
+	 *            The project file
 	 * @return The final URL corresponding to the project file
-	 * @throws IOException See {@link Connection#execute()}
+	 * @throws IOException
+	 *             See {@link Connection#execute()}
 	 */
 	public static String getFinalUrl(ProjectFile file) throws IOException {
 		Response response = Jsoup.connect(CurseURLFormatter.format(file.getFileUrl())).ignoreContentType(true)

@@ -11,16 +11,17 @@ import java.util.List;
 
 import com.franckyi.modcenter.api.beans.Project;
 import com.franckyi.modcenter.api.beans.ProjectFile;
+import com.franckyi.modcenter.api.beans.ProjectFileFilter;
 import com.franckyi.modcenter.api.beans.ProjectFilter;
 import com.franckyi.modcenter.api.beans.SortedProjectFilter;
 import com.franckyi.modcenter.api.beans.UpdateResult;
+import com.franckyi.modcenter.api.beans.enums.EnumFileType;
 import com.franckyi.modcenter.api.misc.VersionComparator;
 
 /**
  * <p>
  * The main class for the Mod Center API. This Class is used to get information
  * from the mod center.
- * </p>
  * <ul>
  * <li>Firstly, you have to initialize it using {@link ModCenterAPI#init}
  * method.</li>
@@ -28,6 +29,7 @@ import com.franckyi.modcenter.api.misc.VersionComparator;
  * <li>Finally, you should use {@link ModCenterAPI#close} method when you stop
  * using the connection.</li>
  * </ul>
+ * </p>
  * 
  * @author Franckyi
  *
@@ -51,6 +53,17 @@ public class ModCenterAPI {
 	 */
 	public static void close() throws SQLException {
 		conn.close();
+	}
+
+	/**
+	 * <p>
+	 * Returns the connection object used to communicate with the database.
+	 * </p>
+	 * 
+	 * @return The connection
+	 */
+	public static Connection getConnection() {
+		return conn;
 	}
 
 	/**
@@ -82,55 +95,35 @@ public class ModCenterAPI {
 		stmt.setInt(1, (page - 1) * count);
 		stmt.setInt(2, count);
 		ResultSet results = stmt.executeQuery();
-		while (results.next()) {
+		while (results.next())
 			files.add(new ProjectFile(results));
-		}
-		return files;
-	}
-
-	/**
-	 * <p>
-	 * Returns a list of {@link ProjectFile}s from a {@link Project}.
-	 * </p>
-	 * 
-	 * @param project
-	 *            The {@link Project}
-	 * @return The list of {@link ProjectFile}s from this {@link Project}
-	 * @throws SQLException
-	 */
-	public static List<ProjectFile> getFilesFromProject(Project project) throws SQLException {
-		List<ProjectFile> files = new ArrayList<>();
-		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM files WHERE projectId = ? ORDER BY fileId DESC;");
-		stmt.setInt(1, project.getProjectId());
-		ResultSet results = stmt.executeQuery();
-		while (results.next()) {
-			files.add(new ProjectFile(results));
-		}
 		return files;
 	}
 
 	/**
 	 * <p>
 	 * Returns a list of {@link ProjectFile}s from a {@link Project} for a
-	 * defined version.
+	 * defined version and release types.
 	 * </p>
 	 * 
 	 * @param project
-	 *            The {@link Project}
-	 * @param version
-	 *            The defined version
+	 *            The project
+	 * @param filter
+	 *            The project file filter to use in the query
 	 * @return The list of {@link ProjectFile}s from this {@link Project}
 	 * @throws SQLException
 	 */
-	public static List<ProjectFile> getFilesFromProject(Project project, String version) throws SQLException {
+	public static List<ProjectFile> getFilesFromProject(Project project, ProjectFileFilter filter) throws SQLException {
 		List<ProjectFile> files = new ArrayList<>();
 		PreparedStatement stmt = conn
 				.prepareStatement("SELECT * FROM files WHERE projectId = ? AND version LIKE ? ORDER BY fileId DESC;");
 		stmt.setInt(1, project.getProjectId());
-		stmt.setString(2, "%" + version + "%");
+		stmt.setString(2, "%" + filter.getVersion() + "%");
 		ResultSet results = stmt.executeQuery();
 		while (results.next()) {
-			files.add(new ProjectFile(results));
+			ProjectFile file = new ProjectFile(results);
+			if (filter.getTypes().contains(file.getType()))
+				files.add(file);
 		}
 		return files;
 	}
@@ -159,6 +152,24 @@ public class ModCenterAPI {
 
 	/**
 	 * <p>
+	 * Returns the project corresponding to the project ID.
+	 * </p>
+	 * 
+	 * @param id
+	 *            The project ID
+	 * @return The project
+	 * @throws SQLException
+	 */
+	public static Project getProjectFromId(int id) throws SQLException {
+		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM projects WHERE projects.projectId = ?;");
+		stmt.setInt(1, id);
+		ResultSet results = stmt.executeQuery();
+		results.next();
+		return new Project(results);
+	}
+
+	/**
+	 * <p>
 	 * Returns a list of {@link Project}s, depending on the page number and the
 	 * number of items on a page. The results are sorted by a
 	 * {@link SortedProjectFilter}.
@@ -169,8 +180,8 @@ public class ModCenterAPI {
 	 * @param count
 	 *            The number of items on the page
 	 * @param filter
-	 *            The sort filter used
-	 * @return A list of mod {@link Project}s
+	 *            The sorted project filter to use in the query
+	 * @return A list of mod projects
 	 * @throws SQLException
 	 */
 	public static List<Project> getProjects(int page, int count, SortedProjectFilter filter) throws SQLException {
@@ -186,9 +197,8 @@ public class ModCenterAPI {
 		stmt.setInt(6, (page - 1) * count);
 		stmt.setInt(7, count);
 		ResultSet results = stmt.executeQuery();
-		while (results.next()) {
+		while (results.next())
 			projects.add(new Project(results));
-		}
 		return projects;
 	}
 
@@ -201,7 +211,7 @@ public class ModCenterAPI {
 	 * @param count
 	 *            The number of {@link Project}s per page
 	 * @param filter
-	 *            The filtering to use in the query.
+	 *            The project filter to use in the query
 	 * @return The number of pages of {@link Project}s containing this keyword
 	 * @throws SQLException
 	 */
@@ -220,18 +230,42 @@ public class ModCenterAPI {
 
 	/**
 	 * <p>
-	 * Returns the list of all {@link ProjectFile}'s versions that can be found in the database.
+	 * Returns the list of all {@link ProjectFile}'s versions that can be found
+	 * in the database.
 	 * </p>
+	 * 
 	 * @return The list of versions
 	 * @throws SQLException
 	 */
 	public static List<String> getVersions() throws SQLException {
 		List<String> list = new ArrayList<>();
 		ResultSet set = conn.createStatement().executeQuery("SELECT DISTINCT version FROM files;");
-		while (set.next()) {
+		while (set.next())
 			if (!(set.getString(1).startsWith("CB") || set.getString(1).equals("-")))
 				list.add(set.getString(1));
-		}
+		list.sort(new VersionComparator());
+		return list;
+	}
+
+	/**
+	 * <p>
+	 * Returns the list of all {@link ProjectFile}'s versions that can be found
+	 * in the database for a project.
+	 * </p>
+	 * 
+	 * @param project
+	 *            The project
+	 * @return The list of versions for this project
+	 * @throws SQLException
+	 */
+	public static List<String> getVersions(Project project) throws SQLException {
+		List<String> list = new ArrayList<>();
+		PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT version FROM files WHERE projectId = ?;");
+		stmt.setInt(1, project.getProjectId());
+		ResultSet set = stmt.executeQuery();
+		while (set.next())
+			if (!(set.getString(1).startsWith("CB") || set.getString(1).equals("-")))
+				list.add(set.getString(1));
 		list.sort(new VersionComparator());
 		return list;
 	}
@@ -318,64 +352,43 @@ public class ModCenterAPI {
 			return " ASC";
 		return " DESC";
 	}
-	
+
 	/**
-	 * TODO : Updater
-	 * @param project
+	 * <p>
+	 * This method is used to check for updates. It will return an
+	 * {@link UpdateResult}. Look at the documentation of this class for more
+	 * informations.
+	 * </p>
+	 * 
 	 * @param file
-	 * @return
+	 *            The project file to update
+	 * @return The update result
 	 * @throws SQLException
 	 */
-	public static UpdateResult update(Project project, ProjectFile file) throws SQLException {
+	public static UpdateResult update(ProjectFile file) throws SQLException {
 		UpdateResult res = new UpdateResult();
-		PreparedStatement pstmt;
-		ResultSet set;
-		pstmt = conn.prepareStatement("SELECT * FROM files WHERE projectId = ? ORDER BY fileId DESC LIMIT 0,1;");
-		pstmt.setInt(1, project.getProjectId());
-		set = pstmt.executeQuery();
-		res.setUpToDate((set.next() && set.getInt(1) == file.getFileId()));
-		pstmt = conn.prepareStatement("SELECT * FROM files WHERE type = 'ALPHA' AND projectId = ?;");
-		pstmt.setInt(1, project.getProjectId());
-		set = pstmt.executeQuery();
-		if (set.next())
-			res.setLatestAlpha(new ProjectFile(set));
-		pstmt = conn.prepareStatement("SELECT * FROM files WHERE type = 'BETA' AND projectId = ?;");
-		pstmt.setInt(1, project.getProjectId());
-		set = pstmt.executeQuery();
-		if (set.next())
-			res.setLatestAlpha(new ProjectFile(set));
-		pstmt = conn.prepareStatement("SELECT * FROM files WHERE type = 'RELEASE' AND projectId = ?;");
-		pstmt.setInt(1, project.getProjectId());
-		set = pstmt.executeQuery();
-		if (set.next())
-			res.setLatestAlpha(new ProjectFile(set));
+		PreparedStatement pstmt = conn
+				.prepareStatement("SELECT * FROM files WHERE projectId = ? AND fileId > ? ORDER BY fileId DESC;");
+		pstmt.setInt(1, file.getProjectId());
+		pstmt.setInt(2, file.getFileId());
+		ResultSet set = pstmt.executeQuery();
+		while (set.next()) {
+			ProjectFile newFile = new ProjectFile(set);
+			if (res.getLatestRelease() == null && newFile.getType().equals(EnumFileType.RELEASE)) {
+				res.setLatestRelease(newFile);
+				if (res.getUpdateLevel().getLevel() < EnumFileType.RELEASE.getLevel())
+					res.setUpdateLevel(EnumFileType.RELEASE);
+			} else if (res.getLatestBeta() == null && newFile.getType().equals(EnumFileType.BETA)) {
+				res.setLatestBeta(newFile);
+				if (res.getUpdateLevel().getLevel() < EnumFileType.BETA.getLevel())
+					res.setUpdateLevel(EnumFileType.BETA);
+			} else if (res.getLatestAlpha() == null && newFile.getType().equals(EnumFileType.ALPHA)) {
+				res.setLatestAlpha(newFile);
+				if (res.getUpdateLevel().getLevel() < EnumFileType.ALPHA.getLevel())
+					res.setUpdateLevel(EnumFileType.ALPHA);
+			}
+		}
 		return res;
-	}
-
-	/**
-	 * <p>
-	 * Returns the connection object used to communicate with the database.
-	 * </p>
-	 * @return The connection
-	 */
-	public static Connection getConnection() {
-		return conn;
-	}
-
-	/**
-	 * <p>
-	 * Returns the project corresponding to the project ID.
-	 * </p>
-	 * @param id The project ID
-	 * @return The project
-	 * @throws SQLException
-	 */
-	public static Project getProjectFromId(int id) throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM projects WHERE projects.projectId = ?;");
-		stmt.setInt(1, id);
-		ResultSet results = stmt.executeQuery();
-		results.next();
-		return new Project(results);
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.HashMap;
  * <p>
  * An utility class. Contains a method to unescape HTML.
  * </p>
+ * 
  * @author Franckyi
  *
  */
@@ -272,7 +273,9 @@ public class ModCenterUtils {
 	 * <p>
 	 * Returns the HTML unescaped version of the string.
 	 * </p>
-	 * @param s The string
+	 * 
+	 * @param s
+	 *            The string
 	 * @return The unescaped string
 	 */
 	public static String unescapeHTML(String s) {

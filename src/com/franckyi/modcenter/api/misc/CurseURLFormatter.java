@@ -1,5 +1,7 @@
 package com.franckyi.modcenter.api.misc;
 
+import com.franckyi.modcenter.api.beans.enums.EnumSortFilter;
+
 /**
  * <p>
  * Class used to format URLs to connect to the Curseforge website.
@@ -60,7 +62,9 @@ public class CurseURLFormatter {
 	}
 
 	/**
-	 * Returns the URL to the mods project list, sorted by {@link EnumSortFilter#UPDATED}.
+	 * Returns the URL to the mods project list, sorted by
+	 * {@link EnumSortFilter#UPDATED}.
+	 * 
 	 * @return The URL
 	 */
 	public static String formatLatest() {

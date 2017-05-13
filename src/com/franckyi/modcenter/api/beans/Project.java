@@ -85,7 +85,8 @@ public class Project {
 	 */
 	public Project(ResultSet results) throws SQLException {
 		this(results.getInt(1), results.getString(2), results.getString(3), results.getInt(4), results.getDate(5),
-				results.getString(6), results.getString(7), results.getString(8), EnumCategory.format(results.getString(9)));
+				results.getString(6), results.getString(7), results.getString(8),
+				EnumCategory.format(results.getString(9)));
 	}
 
 	/**
@@ -216,7 +217,8 @@ public class Project {
 	}
 
 	/**
-	 * @param categories the categories to set
+	 * @param categories
+	 *            the categories to set
 	 */
 	public void setCategories(List<EnumCategory> categories) {
 		this.categories = categories;

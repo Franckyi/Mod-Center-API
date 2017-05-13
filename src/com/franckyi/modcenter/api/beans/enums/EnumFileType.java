@@ -12,16 +12,18 @@ import com.franckyi.modcenter.api.beans.ProjectFile;
  */
 public enum EnumFileType {
 
-	ANY("", "Any"),
-	ALPHA("ALPHA", "Alpha"),
-	BETA("BETA", "Beta"),
-	RELEASE("RELEASE", "Release");
+	ANY("", "Any", 0),
+	ALPHA("ALPHA", "Alpha", 1),
+	BETA("BETA", "Beta", 2),
+	RELEASE("RELEASE", "Release", 3);
 
 	private String dbKey, displayText;
+	private int level;
 
-	private EnumFileType(String dbKey, String displayText) {
+	private EnumFileType(String dbKey, String displayText, int level) {
 		this.dbKey = dbKey;
 		this.displayText = displayText;
+		this.level = level;
 	}
 
 	/**
@@ -36,6 +38,13 @@ public enum EnumFileType {
 	 */
 	public String getDisplayText() {
 		return displayText;
+	}
+
+	/**
+	 * @return the level
+	 */
+	public int getLevel() {
+		return level;
 	}
 
 	/**

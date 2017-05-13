@@ -4,19 +4,22 @@ import com.franckyi.modcenter.api.beans.enums.EnumCategory;
 
 /**
  * <p>
- * The filter used in API queries on {@link Project}s that doesn't need a sort order. It has informations about a query, a version and a category.
+ * The filter used in API queries on {@link Project}s that doesn't need a sort
+ * order. It has informations about a query, a version and a category.
  * </p>
+ * 
  * @author Franckyi
  *
  */
 public class ProjectFilter {
-	
+
 	private String query;
 	private String version;
 	private EnumCategory category;
-	
+
 	/**
 	 * The ProjectFilter constructor.
+	 * 
 	 * @param query
 	 * @param version
 	 * @param category
@@ -47,6 +50,5 @@ public class ProjectFilter {
 	public EnumCategory getCategory() {
 		return category;
 	}
-	
 
 }

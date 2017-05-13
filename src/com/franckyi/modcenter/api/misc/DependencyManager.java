@@ -16,6 +16,7 @@ import com.franckyi.modcenter.api.beans.Project;
 import com.franckyi.modcenter.api.beans.ProjectDependency;
 import com.franckyi.modcenter.api.beans.ProjectDependency.ProjectDependencies;
 import com.franckyi.modcenter.api.beans.ProjectFile;
+import com.franckyi.modcenter.api.beans.ProjectFileFilter;
 
 /**
  * <p>
@@ -70,7 +71,8 @@ public class DependencyManager implements Runnable {
 		for (Element li : ul.select("li.project-tag")) {
 			String projectUrl = li.select("a").get(0).attr("href");
 			Project p = ModCenterAPI.getProjectFromId(Integer.parseInt(projectUrl.replace("/projects/", "")));
-			files.add(new ProjectDependency(p, ModCenterAPI.getFilesFromProject(p, this.file.getVersion()).get(0)));
+			files.add(new ProjectDependency(p,
+					ModCenterAPI.getFilesFromProject(p, new ProjectFileFilter(this.file.getVersion())).get(0)));
 		}
 		return files;
 	}

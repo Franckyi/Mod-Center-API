@@ -1,11 +1,24 @@
 package com.franckyi.modcenter.api.beans;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.franckyi.modcenter.api.beans.enums.EnumFileType;
+
 /**
  * <p>
- * The update result bean class. Returned when checking for updates. Stored informations :
+ * The update result bean class. Returned when checking for updates. Stored
+ * informations :
  * </p>
  * <ul>
- * <li>A boolean saying if the project is up to date</li>
+ * <li>An {@link EnumFileType} telling the update level :</li>
+ * <ul>
+ * <li>{@link EnumFileType#RELEASE} if a new Release file is found</li>
+ * <li>{@link EnumFileType#BETA} if a new Beta file is found</li>
+ * <li>{@link EnumFileType#ALPHA} if a new Alpha file is found</li>
+ * <li>{@link EnumFileType#ANY} if the {@link Project} is up to date</li>
+ * </ul>
+ * <li>The list of new {@link ProjectFile}s</li>
  * <li>The latest alpha {@link ProjectFile}</li>
  * <li>The latest beta {@link ProjectFile}</li>
  * <li>The latest release {@link ProjectFile}</li>
@@ -15,51 +28,41 @@ package com.franckyi.modcenter.api.beans;
  *
  */
 public class UpdateResult {
-	
-	private boolean upToDate;
+
+	private EnumFileType updateLevel = EnumFileType.ANY;
+	private List<ProjectFile> newFiles = new ArrayList<>();
 	private ProjectFile latestAlpha;
 	private ProjectFile latestBeta;
 	private ProjectFile latestRelease;
-	
+
 	/**
-	 * <p>
-	 * A complete UpdateResult constructor.
-	 * </p>
-	 * 
-	 * @param upToDate
-	 * @param latestAlpha
-	 * @param latestBeta
-	 * @param latestRelease
+	 * @return the updateLevel
 	 */
-	public UpdateResult(boolean upToDate, ProjectFile latestAlpha, ProjectFile latestBeta,
-			ProjectFile latestRelease) {
-		this.upToDate = upToDate;
-		this.latestAlpha = latestAlpha;
-		this.latestBeta = latestBeta;
-		this.latestRelease = latestRelease;
+	public EnumFileType getUpdateLevel() {
+		return updateLevel;
 	}
 
 	/**
-	 * <p>
-	 * An empty UpdateResult constructor.
-	 * </p>
+	 * @param updateLevel
+	 *            the updateLevel to set
 	 */
-	public UpdateResult() {
-		// TODO Auto-generated constructor stub
+	public void setUpdateLevel(EnumFileType updateLevel) {
+		this.updateLevel = updateLevel;
 	}
 
 	/**
-	 * @return the upToDate
+	 * @return the newFiles
 	 */
-	public boolean isUpToDate() {
-		return upToDate;
+	public List<ProjectFile> getNewFiles() {
+		return newFiles;
 	}
 
 	/**
-	 * @param upToDate the upToDate to set
+	 * @param newFiles
+	 *            the newFiles to set
 	 */
-	public void setUpToDate(boolean upToDate) {
-		this.upToDate = upToDate;
+	public void setNewFiles(List<ProjectFile> newFiles) {
+		this.newFiles = newFiles;
 	}
 
 	/**
@@ -70,7 +73,8 @@ public class UpdateResult {
 	}
 
 	/**
-	 * @param latestAlpha the latestAlpha to set
+	 * @param latestAlpha
+	 *            the latestAlpha to set
 	 */
 	public void setLatestAlpha(ProjectFile latestAlpha) {
 		this.latestAlpha = latestAlpha;
@@ -84,7 +88,8 @@ public class UpdateResult {
 	}
 
 	/**
-	 * @param latestBeta the latestBeta to set
+	 * @param latestBeta
+	 *            the latestBeta to set
 	 */
 	public void setLatestBeta(ProjectFile latestBeta) {
 		this.latestBeta = latestBeta;
@@ -98,7 +103,8 @@ public class UpdateResult {
 	}
 
 	/**
-	 * @param latestRelease the latestRelease to set
+	 * @param latestRelease
+	 *            the latestRelease to set
 	 */
 	public void setLatestRelease(ProjectFile latestRelease) {
 		this.latestRelease = latestRelease;
