@@ -11,11 +11,11 @@ import java.util.List;
 
 import com.franckyi.modcenter.api.beans.Project;
 import com.franckyi.modcenter.api.beans.ProjectFile;
-import com.franckyi.modcenter.api.beans.ProjectFileFilter;
-import com.franckyi.modcenter.api.beans.ProjectFilter;
-import com.franckyi.modcenter.api.beans.SortedProjectFilter;
 import com.franckyi.modcenter.api.beans.UpdateResult;
 import com.franckyi.modcenter.api.beans.enums.EnumFileType;
+import com.franckyi.modcenter.api.beans.filters.ProjectFileFilter;
+import com.franckyi.modcenter.api.beans.filters.ProjectFilter;
+import com.franckyi.modcenter.api.beans.filters.SortedProjectFilter;
 import com.franckyi.modcenter.api.misc.VersionComparator;
 
 /**
@@ -280,6 +280,7 @@ public class ModCenterAPI {
 	 */
 	public static void init() throws SQLException, ClassNotFoundException {
 		Class.forName(JDBC_DRIVER);
+		DriverManager.setLoginTimeout(5);
 		conn = DriverManager.getConnection(JDBC_CONNECTION, JDBC_USERNAME, JDBC_PASSWORD);
 	}
 
@@ -298,6 +299,7 @@ public class ModCenterAPI {
 	 */
 	public static void init(String username, String password) throws SQLException, ClassNotFoundException {
 		Class.forName(JDBC_DRIVER);
+		DriverManager.setLoginTimeout(5);
 		conn = DriverManager.getConnection(JDBC_CONNECTION, username, password);
 	}
 
@@ -390,5 +392,11 @@ public class ModCenterAPI {
 		}
 		return res;
 	}
+
+	// TODO Smart Update :
+	// - updating release file => check if a new release file is available
+	// - updating beta file => check if a new beta or release file is available
+	// - updating alpha file => check if a new file is available
+	// TODO Normal Update : Improve the current one
 
 }

@@ -3,8 +3,11 @@ package com.franckyi.modcenter.api.beans;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.franckyi.modcenter.api.beans.enums.EnumFileType;
+import com.franckyi.modcenter.api.misc.ModCenterUtils;
 
 /**
  * <p>
@@ -29,12 +32,14 @@ public class ProjectFile {
 
 	private int fileId;
 	private String fileName;
-	private EnumFileType type;
+	private EnumFileType type = EnumFileType.ANY;
 	private String size;
 	private Date uploaded;
 	private String version;
 	private int downloads;
 	private String fileUrl;
+	private List<Integer> optionalLibraries = new ArrayList<>();
+	private List<Integer> requiredLibraries = new ArrayList<>();
 	private int projectId;
 
 	/**
@@ -53,7 +58,8 @@ public class ProjectFile {
 	 * @param projectId
 	 */
 	public ProjectFile(int fileId, String fileName, EnumFileType type, String size, Date uploaded, String version,
-			int downloads, String fileUrl, int projectId) {
+			int downloads, String fileUrl, List<Integer> optionalLibraries, List<Integer> requiredLibraries,
+			int projectId) {
 		this.fileId = fileId;
 		this.fileName = fileName;
 		this.type = type;
@@ -62,6 +68,8 @@ public class ProjectFile {
 		this.version = version;
 		this.downloads = downloads;
 		this.fileUrl = fileUrl;
+		this.optionalLibraries = optionalLibraries;
+		this.requiredLibraries = requiredLibraries;
 		this.projectId = projectId;
 	}
 
@@ -84,7 +92,9 @@ public class ProjectFile {
 	 */
 	public ProjectFile(ResultSet results) throws SQLException {
 		this(results.getInt(1), results.getString(2), EnumFileType.toType(results.getString(3)), results.getString(4),
-				results.getDate(5), results.getString(6), results.getInt(7), results.getString(8), results.getInt(9));
+				results.getDate(5), results.getString(6), results.getInt(7), results.getString(8),
+				ModCenterUtils.toIntList(results.getString(9)), ModCenterUtils.toIntList(results.getString(10)),
+				results.getInt(11));
 	}
 
 	/**
@@ -205,6 +215,36 @@ public class ProjectFile {
 	 */
 	public void setFileUrl(String fileUrl) {
 		this.fileUrl = fileUrl;
+	}
+
+	/**
+	 * @return the optionalLibraries
+	 */
+	public List<Integer> getOptionalLibraries() {
+		return optionalLibraries;
+	}
+
+	/**
+	 * @param optionalLibraries
+	 *            the optionalLibraries to set
+	 */
+	public void setOptionalLibraries(List<Integer> optionalLibraries) {
+		this.optionalLibraries = optionalLibraries;
+	}
+
+	/**
+	 * @return the requiredLibraries
+	 */
+	public List<Integer> getRequiredLibraries() {
+		return requiredLibraries;
+	}
+
+	/**
+	 * @param requiredLibraries
+	 *            the requiredLibraries to set
+	 */
+	public void setRequiredLibraries(List<Integer> requiredLibraries) {
+		this.requiredLibraries = requiredLibraries;
 	}
 
 	/**

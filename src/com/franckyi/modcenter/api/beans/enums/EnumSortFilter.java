@@ -1,6 +1,6 @@
 package com.franckyi.modcenter.api.beans.enums;
 
-import com.franckyi.modcenter.api.beans.SortedProjectFilter;
+import com.franckyi.modcenter.api.beans.filters.SortedProjectFilter;
 
 /**
  * <p>

@@ -1,5 +1,6 @@
-package com.franckyi.modcenter.api.beans;
+package com.franckyi.modcenter.api.beans.filters;
 
+import com.franckyi.modcenter.api.beans.Project;
 import com.franckyi.modcenter.api.beans.enums.EnumCategory;
 import com.franckyi.modcenter.api.beans.enums.EnumSortFilter;
 

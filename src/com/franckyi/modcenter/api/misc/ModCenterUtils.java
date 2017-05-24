@@ -1,6 +1,15 @@
 package com.franckyi.modcenter.api.misc;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import org.jsoup.Connection;
+import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
+
+import com.franckyi.modcenter.api.beans.ProjectFile;
 
 /**
  * <p>
@@ -308,5 +317,41 @@ public class ModCenterUtils {
 		}
 		result.append(s.substring(lastEnd));
 		return result.toString();
+	}
+
+	/**
+	 * <p>
+	 * Converts a string formatted like "i j [...]" into a list of Integers.<br>
+	 * Used to convert optional libraries and required libraries from the
+	 * database to the {@link ProjectFile} object.
+	 * </p>
+	 * 
+	 * @param string
+	 *            The formatted string
+	 * @return The list of integers
+	 */
+	public static List<Integer> toIntList(String string) {
+		List<Integer> list = new ArrayList<>();
+		for (String int_ : string.split(" "))
+			list.add(Integer.parseInt(int_));
+		return list;
+	}
+
+	/**
+	 * <p>
+	 * Returns the final URL of the project file stocked on the server. Should
+	 * be used to download the project file.
+	 * </p>
+	 * 
+	 * @param file
+	 *            The project file
+	 * @return The final URL corresponding to the project file
+	 * @throws IOException
+	 *             See {@link Connection#execute()}
+	 */
+	public static String getFinalUrl(ProjectFile file) throws IOException {
+		Response response = Jsoup.connect(CurseURLFormatter.format(file.getFileUrl())).ignoreContentType(true)
+				.execute();
+		return (response.url().toString());
 	}
 }
