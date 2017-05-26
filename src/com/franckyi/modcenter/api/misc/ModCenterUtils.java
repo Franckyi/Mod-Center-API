@@ -332,9 +332,30 @@ public class ModCenterUtils {
 	 */
 	public static List<Integer> toIntList(String string) {
 		List<Integer> list = new ArrayList<>();
+		if (string.equals(""))
+			return list;
 		for (String int_ : string.split(" "))
 			list.add(Integer.parseInt(int_));
 		return list;
+	}
+
+	/**
+	 * <p>
+	 * Converts a list of Integers into a string formatted like "i j [...]".<br>
+	 * Used to convert optional libraries and required libraries from the
+	 * {@link ProjectFile} object to the database.
+	 * </p>
+	 * 
+	 * @param list
+	 *            The list of integers
+	 * 
+	 * @return The formatted string
+	 */
+	public static String toIntList(List<Integer> list) {
+		String res = "";
+		for (int i : list)
+			res += i;
+		return res;
 	}
 
 	/**

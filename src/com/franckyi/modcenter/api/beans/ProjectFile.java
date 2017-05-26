@@ -55,6 +55,8 @@ public class ProjectFile {
 	 * @param version
 	 * @param downloads
 	 * @param fileUrl
+	 * @param optionalLibraries
+	 * @param requiredLibraries
 	 * @param projectId
 	 */
 	public ProjectFile(int fileId, String fileName, EnumFileType type, String size, Date uploaded, String version,

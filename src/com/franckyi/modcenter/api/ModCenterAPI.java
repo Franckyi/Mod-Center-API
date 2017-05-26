@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import com.franckyi.modcenter.api.beans.Project;
@@ -79,7 +80,7 @@ public class ModCenterAPI {
 	 * @throws SQLException
 	 */
 	public static ProjectFile getFileFromName(String name) throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM files WHERE name LIKE ?");
+		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM files WHERE fileName LIKE ?");
 		stmt.setString(1, "%" + name + "%");
 		ResultSet results = stmt.executeQuery();
 		if (results.next())
@@ -364,39 +365,115 @@ public class ModCenterAPI {
 	 * 
 	 * @param file
 	 *            The project file to update
+	 * @param checkAlpha
+	 *            True if you want to check if there's a new alpha file
+	 * @param checkBeta
+	 *            True if you want to check if there's a new beta file
 	 * @return The update result
 	 * @throws SQLException
 	 */
-	public static UpdateResult update(ProjectFile file) throws SQLException {
+	public static UpdateResult update(ProjectFile file, boolean checkAlpha, boolean checkBeta) throws SQLException {
 		UpdateResult res = new UpdateResult();
-		PreparedStatement pstmt = conn
-				.prepareStatement("SELECT * FROM files WHERE projectId = ? AND fileId > ? ORDER BY fileId DESC;");
+		PreparedStatement pstmt = conn.prepareStatement(
+				"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? ORDER BY fileId DESC;");
 		pstmt.setInt(1, file.getProjectId());
 		pstmt.setInt(2, file.getFileId());
+		pstmt.setString(3, file.getVersion());
 		ResultSet set = pstmt.executeQuery();
 		while (set.next()) {
 			ProjectFile newFile = new ProjectFile(set);
-			if (res.getLatestRelease() == null && newFile.getType().equals(EnumFileType.RELEASE)) {
-				res.setLatestRelease(newFile);
-				if (res.getUpdateLevel().getLevel() < EnumFileType.RELEASE.getLevel())
-					res.setUpdateLevel(EnumFileType.RELEASE);
-			} else if (res.getLatestBeta() == null && newFile.getType().equals(EnumFileType.BETA)) {
-				res.setLatestBeta(newFile);
-				if (res.getUpdateLevel().getLevel() < EnumFileType.BETA.getLevel())
-					res.setUpdateLevel(EnumFileType.BETA);
-			} else if (res.getLatestAlpha() == null && newFile.getType().equals(EnumFileType.ALPHA)) {
-				res.setLatestAlpha(newFile);
-				if (res.getUpdateLevel().getLevel() < EnumFileType.ALPHA.getLevel())
-					res.setUpdateLevel(EnumFileType.ALPHA);
+			System.out.println(newFile.getFileName());
+			if (newFile.getType().equals(EnumFileType.RELEASE)) {
+				res.getNewFiles().add(newFile);
+				if (res.getLatestRelease() == null)
+					res.setLatestRelease(newFile);
+			} else if (newFile.getType().equals(EnumFileType.BETA) && checkBeta) {
+				res.getNewFiles().add(newFile);
+				if (res.getLatestBeta() == null)
+					res.setLatestBeta(newFile);
+			} else if (newFile.getType().equals(EnumFileType.ALPHA) && checkAlpha) {
+				res.getNewFiles().add(newFile);
+				if (res.getLatestAlpha() == null)
+					res.setLatestAlpha(newFile);
 			}
 		}
 		return res;
 	}
 
-	// TODO Smart Update :
-	// - updating release file => check if a new release file is available
-	// - updating beta file => check if a new beta or release file is available
-	// - updating alpha file => check if a new file is available
-	// TODO Normal Update : Improve the current one
+	/**
+	 * <p>
+	 * This method is used to check for updates. It will return the updated
+	 * file. The result depends on the current file stability :
+	 * <ul>
+	 * <li>If the file is a release file, it will only check for new
+	 * releases.</li>
+	 * <li>If the file is a beta file, it will only check for new betas or
+	 * releases.</li>
+	 * <li>If the file is an alpha file, it will check for any new file.</li>
+	 * </ul>
+	 * <u><strong>If no updates are found, it returns
+	 * <code>null</code>.</strong></u>
+	 * </p>
+	 * 
+	 * @param file
+	 *            The project file to update
+	 * @return The updated file
+	 * @throws SQLException
+	 */
+	public static ProjectFile updateSmart(ProjectFile file) throws SQLException {
+		UpdateResult res = new UpdateResult();
+		PreparedStatement pstmt;
+		if (file.getType().equals(EnumFileType.RELEASE)) {
+			pstmt = conn.prepareStatement(
+					"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? AND type = ? ORDER BY fileId DESC;");
+			pstmt.setString(4, EnumFileType.RELEASE.getDbKey());
+		} else if (file.getType().equals(EnumFileType.BETA)) {
+			pstmt = conn.prepareStatement(
+					"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? AND type IN (?, ?) ORDER BY fileId DESC;");
+			pstmt.setString(4, EnumFileType.RELEASE.getDbKey());
+			pstmt.setString(5, EnumFileType.BETA.getDbKey());
+		} else {
+			pstmt = conn.prepareStatement(
+					"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? ORDER BY fileId DESC;");
+		}
+		pstmt.setInt(1, file.getProjectId());
+		pstmt.setInt(2, file.getFileId());
+		pstmt.setString(3, file.getVersion());
+		ResultSet set = pstmt.executeQuery();
+		while (set.next()) {
+			ProjectFile newFile = new ProjectFile(set);
+			if (newFile.getType().equals(EnumFileType.RELEASE)) {
+				if (res.getLatestRelease() == null) {
+					res.setLatestRelease(newFile);
+					res.getNewFiles().add(newFile);
+				}
+			} else if (newFile.getType().equals(EnumFileType.BETA)) {
+				if (res.getLatestBeta() == null) {
+					res.setLatestBeta(newFile);
+					res.getNewFiles().add(newFile);
+				}
+			} else if (newFile.getType().equals(EnumFileType.ALPHA)) {
+				if (res.getLatestAlpha() == null) {
+					res.setLatestAlpha(newFile);
+					res.getNewFiles().add(newFile);
+				}
+			}
+		}
+		if (res.getNewFiles().size() == 0)
+			return null;
+		else {
+			res.getNewFiles().sort(new SmartUpdateComparator());
+			return res.getNewFiles().get(0);
+		}
+	}
+	
+	public static class SmartUpdateComparator implements Comparator<ProjectFile> {
+
+		@Override
+		public int compare(ProjectFile o1, ProjectFile o2) {
+			return (o1.getFileId() < o2.getFileId()) ? 1 : -1;
+		}
+
+	}
 
 }
