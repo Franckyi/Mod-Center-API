@@ -372,8 +372,7 @@ public class ModCenterAPI {
 	 * @return The update result
 	 * @throws SQLException
 	 */
-	public static UpdateResult update(ProjectFile file, boolean checkAlpha, boolean checkBeta)
-			throws SQLException {
+	public static UpdateResult update(ProjectFile file, boolean checkAlpha, boolean checkBeta) throws SQLException {
 		UpdateResult res = new UpdateResult();
 		PreparedStatement stmt = conn.prepareStatement(
 				"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? AND type IN (?, ?, ?) ORDER BY fileId DESC;");
