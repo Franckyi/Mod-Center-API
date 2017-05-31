@@ -32,7 +32,7 @@ public class ProjectFile {
 
 	private int fileId;
 	private String fileName;
-	private EnumFileType type = EnumFileType.ANY;
+	private EnumFileType type;
 	private String size;
 	private Date uploaded;
 	private String version;

@@ -2,6 +2,7 @@ package com.franckyi.modcenter.api.beans;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>
@@ -21,9 +22,9 @@ import java.util.List;
 public class UpdateResult {
 
 	private List<ProjectFile> newFiles = new ArrayList<>();
-	private ProjectFile latestAlpha;
-	private ProjectFile latestBeta;
-	private ProjectFile latestRelease;
+	private Optional<ProjectFile> latestAlpha;
+	private Optional<ProjectFile> latestBeta;
+	private Optional<ProjectFile> latestRelease;
 
 	/**
 	 * @return the newFiles
@@ -43,7 +44,7 @@ public class UpdateResult {
 	/**
 	 * @return the latestAlpha
 	 */
-	public ProjectFile getLatestAlpha() {
+	public Optional<ProjectFile> getLatestAlpha() {
 		return latestAlpha;
 	}
 
@@ -52,13 +53,13 @@ public class UpdateResult {
 	 *            the latestAlpha to set
 	 */
 	public void setLatestAlpha(ProjectFile latestAlpha) {
-		this.latestAlpha = latestAlpha;
+		this.latestAlpha = Optional.of(latestAlpha);
 	}
 
 	/**
 	 * @return the latestBeta
 	 */
-	public ProjectFile getLatestBeta() {
+	public Optional<ProjectFile> getLatestBeta() {
 		return latestBeta;
 	}
 
@@ -67,13 +68,13 @@ public class UpdateResult {
 	 *            the latestBeta to set
 	 */
 	public void setLatestBeta(ProjectFile latestBeta) {
-		this.latestBeta = latestBeta;
+		this.latestBeta = Optional.of(latestBeta);
 	}
 
 	/**
 	 * @return the latestRelease
 	 */
-	public ProjectFile getLatestRelease() {
+	public Optional<ProjectFile> getLatestRelease() {
 		return latestRelease;
 	}
 
@@ -82,7 +83,7 @@ public class UpdateResult {
 	 *            the latestRelease to set
 	 */
 	public void setLatestRelease(ProjectFile latestRelease) {
-		this.latestRelease = latestRelease;
+		this.latestRelease = Optional.of(latestRelease);
 	}
 
 }

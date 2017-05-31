@@ -7,8 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import com.franckyi.modcenter.api.beans.Project;
 import com.franckyi.modcenter.api.beans.ProjectFile;
@@ -79,14 +79,13 @@ public class ModCenterAPI {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static ProjectFile getFileFromName(String name) throws SQLException {
+	public static Optional<ProjectFile> getFileFromName(String name) throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM files WHERE fileName LIKE ?");
 		stmt.setString(1, "%" + name + "%");
 		ResultSet results = stmt.executeQuery();
 		if (results.next())
-			return new ProjectFile(results);
-		else
-			return null;
+			return Optional.of(new ProjectFile(results));
+		return Optional.empty();
 	}
 
 	@Deprecated
@@ -141,14 +140,13 @@ public class ModCenterAPI {
 	 * @return
 	 * @throws SQLException
 	 */
-	public static Project getProjectFromFile(ProjectFile file) throws SQLException {
+	public static Optional<Project> getProjectFromFile(ProjectFile file) throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM projects WHERE projectId = ?");
 		stmt.setInt(1, file.getProjectId());
 		ResultSet results = stmt.executeQuery();
 		if (results.next())
-			return new Project(results);
-		else
-			return null;
+			return Optional.of(new Project(results));
+		return Optional.empty();
 	}
 
 	/**
@@ -161,12 +159,13 @@ public class ModCenterAPI {
 	 * @return The project
 	 * @throws SQLException
 	 */
-	public static Project getProjectFromId(int id) throws SQLException {
+	public static Optional<Project> getProjectFromId(int id) throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM projects WHERE projects.projectId = ?;");
 		stmt.setInt(1, id);
 		ResultSet results = stmt.executeQuery();
-		results.next();
-		return new Project(results);
+		if (results.next())
+			return Optional.of(new Project(results));
+		return Optional.empty();
 	}
 
 	/**
@@ -225,8 +224,9 @@ public class ModCenterAPI {
 		stmt.setString(4, "%" + filter.getQuery() + "%");
 		stmt.setString(5, "%" + filter.getCategory().getDbKey() + "%");
 		ResultSet results = stmt.executeQuery();
-		results.next();
-		return results.getInt(1) / count + 1;
+		if (results.next())
+			return results.getInt(1) / count + 1;
+		return 0;
 	}
 
 	/**
@@ -240,10 +240,10 @@ public class ModCenterAPI {
 	 */
 	public static List<String> getVersions() throws SQLException {
 		List<String> list = new ArrayList<>();
-		ResultSet set = conn.createStatement().executeQuery("SELECT DISTINCT version FROM files;");
-		while (set.next())
-			if (!(set.getString(1).startsWith("CB") || set.getString(1).equals("-")))
-				list.add(set.getString(1));
+		ResultSet results = conn.createStatement()
+				.executeQuery("SELECT DISTINCT version FROM files WHERE version NOT LIKE '%CB%' AND version != '-';");
+		while (results.next())
+			list.add(results.getString(1));
 		list.sort(new VersionComparator());
 		return list;
 	}
@@ -261,12 +261,12 @@ public class ModCenterAPI {
 	 */
 	public static List<String> getVersions(Project project) throws SQLException {
 		List<String> list = new ArrayList<>();
-		PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT version FROM files WHERE projectId = ?;");
+		PreparedStatement stmt = conn.prepareStatement(
+				"SELECT DISTINCT version FROM files WHERE projectId = ? AND version NOT LIKE '%CB%' AND version != '-';");
 		stmt.setInt(1, project.getProjectId());
-		ResultSet set = stmt.executeQuery();
-		while (set.next())
-			if (!(set.getString(1).startsWith("CB") || set.getString(1).equals("-")))
-				list.add(set.getString(1));
+		ResultSet results = stmt.executeQuery();
+		while (results.next())
+			list.add(results.getString(1));
 		list.sort(new VersionComparator());
 		return list;
 	}
@@ -372,26 +372,30 @@ public class ModCenterAPI {
 	 * @return The update result
 	 * @throws SQLException
 	 */
-	public static UpdateResult update(ProjectFile file, boolean checkAlpha, boolean checkBeta) throws SQLException {
+	public static UpdateResult update(ProjectFile file, boolean checkAlpha, boolean checkBeta)
+			throws SQLException {
 		UpdateResult res = new UpdateResult();
-		PreparedStatement pstmt = conn.prepareStatement(
-				"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? ORDER BY fileId DESC;");
-		pstmt.setInt(1, file.getProjectId());
-		pstmt.setInt(2, file.getFileId());
-		pstmt.setString(3, file.getVersion());
-		ResultSet set = pstmt.executeQuery();
-		while (set.next()) {
-			ProjectFile newFile = new ProjectFile(set);
+		PreparedStatement stmt = conn.prepareStatement(
+				"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? AND type IN (?, ?, ?) ORDER BY fileId DESC;");
+		stmt.setInt(1, file.getProjectId());
+		stmt.setInt(2, file.getFileId());
+		stmt.setString(3, file.getVersion());
+		stmt.setString(4, EnumFileType.RELEASE.getDbKey());
+		stmt.setString(5, (checkBeta) ? EnumFileType.BETA.getDbKey() : "");
+		stmt.setString(6, (checkAlpha) ? EnumFileType.BETA.getDbKey() : "");
+		ResultSet results = stmt.executeQuery();
+		while (results.next()) {
+			ProjectFile newFile = new ProjectFile(results);
 			System.out.println(newFile.getFileName());
 			if (newFile.getType().equals(EnumFileType.RELEASE)) {
 				res.getNewFiles().add(newFile);
 				if (res.getLatestRelease() == null)
 					res.setLatestRelease(newFile);
-			} else if (newFile.getType().equals(EnumFileType.BETA) && checkBeta) {
+			} else if (newFile.getType().equals(EnumFileType.BETA)) {
 				res.getNewFiles().add(newFile);
 				if (res.getLatestBeta() == null)
 					res.setLatestBeta(newFile);
-			} else if (newFile.getType().equals(EnumFileType.ALPHA) && checkAlpha) {
+			} else if (newFile.getType().equals(EnumFileType.ALPHA)) {
 				res.getNewFiles().add(newFile);
 				if (res.getLatestAlpha() == null)
 					res.setLatestAlpha(newFile);
@@ -420,60 +424,23 @@ public class ModCenterAPI {
 	 * @return The updated file
 	 * @throws SQLException
 	 */
-	public static ProjectFile updateSmart(ProjectFile file) throws SQLException {
-		UpdateResult res = new UpdateResult();
-		PreparedStatement pstmt;
-		if (file.getType().equals(EnumFileType.RELEASE)) {
-			pstmt = conn.prepareStatement(
-					"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? AND type = ? ORDER BY fileId DESC;");
-			pstmt.setString(4, EnumFileType.RELEASE.getDbKey());
-		} else if (file.getType().equals(EnumFileType.BETA)) {
-			pstmt = conn.prepareStatement(
-					"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? AND type IN (?, ?) ORDER BY fileId DESC;");
-			pstmt.setString(4, EnumFileType.RELEASE.getDbKey());
-			pstmt.setString(5, EnumFileType.BETA.getDbKey());
-		} else {
-			pstmt = conn.prepareStatement(
-					"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? ORDER BY fileId DESC;");
-		}
-		pstmt.setInt(1, file.getProjectId());
-		pstmt.setInt(2, file.getFileId());
-		pstmt.setString(3, file.getVersion());
-		ResultSet set = pstmt.executeQuery();
-		while (set.next()) {
-			ProjectFile newFile = new ProjectFile(set);
-			if (newFile.getType().equals(EnumFileType.RELEASE)) {
-				if (res.getLatestRelease() == null) {
-					res.setLatestRelease(newFile);
-					res.getNewFiles().add(newFile);
-				}
-			} else if (newFile.getType().equals(EnumFileType.BETA)) {
-				if (res.getLatestBeta() == null) {
-					res.setLatestBeta(newFile);
-					res.getNewFiles().add(newFile);
-				}
-			} else if (newFile.getType().equals(EnumFileType.ALPHA)) {
-				if (res.getLatestAlpha() == null) {
-					res.setLatestAlpha(newFile);
-					res.getNewFiles().add(newFile);
-				}
+	public static Optional<ProjectFile> updateSmart(ProjectFile file) throws SQLException {
+		PreparedStatement stmt;
+		stmt = conn.prepareStatement(
+				"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? AND type IN (?, ?, ?) ORDER BY fileId DESC LIMIT 0, 1;");
+		stmt.setInt(1, file.getProjectId());
+		stmt.setInt(2, file.getFileId());
+		stmt.setString(3, file.getVersion());
+		int i = 0;
+		for (EnumFileType type : EnumFileType.values())
+			if (!type.equals(EnumFileType.ANY)) {
+				stmt.setString(4 + i, (type.getLevel() > file.getType().getLevel()) ? type.getDbKey() : "");
+				i += 1;
 			}
-		}
-		if (res.getNewFiles().size() == 0)
-			return null;
-		else {
-			res.getNewFiles().sort(new SmartUpdateComparator());
-			return res.getNewFiles().get(0);
-		}
-	}
-	
-	public static class SmartUpdateComparator implements Comparator<ProjectFile> {
-
-		@Override
-		public int compare(ProjectFile o1, ProjectFile o2) {
-			return (o1.getFileId() < o2.getFileId()) ? 1 : -1;
-		}
-
+		ResultSet results = stmt.executeQuery();
+		if (results.next())
+			return Optional.of(new ProjectFile(results));
+		return Optional.empty();
 	}
 
 }

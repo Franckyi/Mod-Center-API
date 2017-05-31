@@ -334,8 +334,8 @@ public class ModCenterUtils {
 		List<Integer> list = new ArrayList<>();
 		if (string.equals(""))
 			return list;
-		for (String int_ : string.split(" "))
-			list.add(Integer.parseInt(int_));
+		for (String i : string.split(" "))
+			list.add(Integer.parseInt(i));
 		return list;
 	}
 
@@ -354,7 +354,48 @@ public class ModCenterUtils {
 	public static String toIntList(List<Integer> list) {
 		String res = "";
 		for (int i : list)
-			res += i;
+			res += i + " ";
+		return res;
+	}
+
+	/**
+	 * <p>
+	 * Converts a string formatted like "abc def [...]" into a list of
+	 * Strings.<br>
+	 * Used to convert minecraft versions from the database to the
+	 * {@link ProjectFile} object.
+	 * </p>
+	 * 
+	 * @param string
+	 *            The formatted string
+	 * @return The list of integers
+	 */
+	public static List<String> toStringList(String string) {
+		List<String> list = new ArrayList<>();
+		if (string.equals(""))
+			return list;
+		for (String i : string.split(" "))
+			list.add(i);
+		return list;
+	}
+
+	/**
+	 * <p>
+	 * Converts a list of Strings into a string formatted like "abc def
+	 * [...]".<br>
+	 * Used to convert minecraft versions from the {@link ProjectFile} object to
+	 * the database.
+	 * </p>
+	 * 
+	 * @param list
+	 *            The list of integers
+	 * 
+	 * @return The formatted string
+	 */
+	public static String toStringList(List<String> list) {
+		String res = "";
+		for (String i : list)
+			res += i + " ";
 		return res;
 	}
 

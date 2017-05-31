@@ -25,7 +25,7 @@ public class SortedProjectFilter extends ProjectFilter {
 
 	/**
 	 * <p>
-	 * The ProjectFilter constructor.
+	 * The SortedProjectFilter constructor.
 	 * </p>
 	 * 
 	 * @param query
