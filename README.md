@@ -3,5 +3,5 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.franckyi/mod-center-api/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.github.franckyi/mod-center-api)
 
 
-The official API for the Mod Center database
+The official API for the Mod Center database. Currently working on it, it will be broken until I finished.
 
