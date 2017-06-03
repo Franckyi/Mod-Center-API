@@ -32,8 +32,8 @@ import com.franckyi.modcenter.api.jooq.tables.records.VersionsRecord;
 
 public class ModCenterAPI {
 
-	private static final String JDBC_CONNECTION = "jdbc:mysql://mysql-franckyi.alwaysdata.net/franckyi_modcenter";
-	private static final String JDBC_USERNAME = "franckyi_public";
+	private static final String JDBC_CONNECTION = "jdbc:mysql://46.101.97.201/modcenter";
+	private static final String JDBC_USERNAME = "public";
 	private static final String JDBC_PASSWORD = "public";
 
 	private static Connection conn;
@@ -169,16 +169,21 @@ public class ModCenterAPI {
 		String query = "%" + filter.getQuery() + "%";
 		SortField<?> order = (filter.getOrder()) ? filter.getSortFilter().getField().asc()
 				: filter.getSortFilter().getField().desc();
-		Result<Record1<Integer>> sub = ctx.select(FILES.PROJECTID).from(FILES).innerJoin(VERSIONS)
+		Result<Record1<Integer>> sub = ctx.selectDistinct(FILES.PROJECTID).from(FILES).innerJoin(VERSIONS)
 				.on(FILES.FILEID.eq(VERSIONS.FILEID)).where(VERSIONS.VERSION.like("%" + filter.getVersion() + "%"))
 				.fetch();
-		Result<Record> rec = ctx.select(PROJECTS.fields()).from(PROJECTS).innerJoin(CATEGORIES)
+		Result<Record> rec = ctx.selectDistinct(PROJECTS.fields()).from(PROJECTS).innerJoin(CATEGORIES)
 				.on(PROJECTS.PROJECTID.eq(CATEGORIES.PROJECTID)).where(PROJECTS.PROJECTID.in(sub))
 				.and((PROJECTS.NAME.like(query)).or(PROJECTS.AUTHOR.like(query)).or(PROJECTS.DESCRIPTION.like(query)))
-				.and(CATEGORIES.CATEGORY.eq(filter.getCategory().getDbKey())).orderBy(order)
+				.and(CATEGORIES.CATEGORY.like("%" + filter.getCategory().getDbKey() + "%")).orderBy(order)
 				.limit((page - 1) * count, count).fetch();
+		System.out.println(ctx.selectDistinct(PROJECTS.fields()).from(PROJECTS).innerJoin(CATEGORIES)
+				.on(PROJECTS.PROJECTID.eq(CATEGORIES.PROJECTID)).where(PROJECTS.PROJECTID.in(sub))
+				.and((PROJECTS.NAME.like(query)).or(PROJECTS.AUTHOR.like(query)).or(PROJECTS.DESCRIPTION.like(query)))
+				.and(CATEGORIES.CATEGORY.like("%" + filter.getCategory().getDbKey() + "%")).orderBy(order)
+				.limit((page - 1) * count, count).toString());
 		for (Record record : rec)
-			projects.add(newProject((ProjectsRecord) record));
+			projects.add(newProject(record));
 		return projects;
 	}
 
@@ -307,23 +312,23 @@ public class ModCenterAPI {
 				.and(FILES.FILEID.gt(file.getFileId())).and(VERSIONS.VERSION.in(file.getVersions()))
 				.and(FILES.TYPE.in(types)).limit(1).fetch();
 		if (rec.size() == 1)
-			return newFile((FilesRecord) rec.get(0));
+			return newFile(rec.get(0));
 		return Optional.empty();
 	}
 
-	public static Project newProject(ProjectsRecord rec) {
+	public static Project newProject(Record rec) {
 		Result<CategoriesRecord> categories = ctx.selectFrom(CATEGORIES)
-				.where(CATEGORIES.PROJECTID.eq(rec.getProjectid())).fetch();
+				.where(CATEGORIES.PROJECTID.eq(rec.get(PROJECTS.PROJECTID))).fetch();
 		return new Project(rec, categories.getValues(CATEGORIES.CATEGORY));
 	}
 
-	public static Optional<ProjectFile> newFile(FilesRecord rec) throws SQLException {
-		Result<VersionsRecord> versions = ctx.selectFrom(VERSIONS).where(VERSIONS.FILEID.eq(rec.getFileid())).fetch();
+	public static Optional<ProjectFile> newFile(Record rec) throws SQLException {
+		Result<VersionsRecord> versions = ctx.selectFrom(VERSIONS).where(VERSIONS.FILEID.eq(rec.get(FILES.FILEID))).fetch();
 		Result<OptionallibrariesRecord> optionalLibraries = ctx.selectFrom(OPTIONALLIBRARIES)
-				.where(OPTIONALLIBRARIES.FILEID.eq(rec.getFileid())).fetch();
+				.where(OPTIONALLIBRARIES.FILEID.eq(rec.get(FILES.FILEID))).fetch();
 		Result<RequiredlibrariesRecord> requiredLibraries = ctx.selectFrom(REQUIREDLIBRARIES)
-				.where(REQUIREDLIBRARIES.FILEID.eq(rec.getFileid())).fetch();
-		Result<ProjectsRecord> project = ctx.selectFrom(PROJECTS).where(PROJECTS.PROJECTID.eq(rec.getProjectid()))
+				.where(REQUIREDLIBRARIES.FILEID.eq(rec.get(FILES.FILEID))).fetch();
+		Result<ProjectsRecord> project = ctx.selectFrom(PROJECTS).where(PROJECTS.PROJECTID.eq(rec.get(FILES.PROJECTID)))
 				.fetch();
 		if (project.size() == 1) {
 			List<Project> opts = new ArrayList<>(), reqs = new ArrayList<>();

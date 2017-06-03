@@ -1,12 +1,13 @@
 package com.franckyi.modcenter.api.beans;
 
+import static com.franckyi.modcenter.api.jooq.Tables.PROJECTS;
+
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
+import org.jooq.Record;
+
 import com.franckyi.modcenter.api.beans.enums.EnumCategory;
-import com.franckyi.modcenter.api.jooq.tables.records.ProjectsRecord;
 
 /**
  * <p>
@@ -75,23 +76,10 @@ public class Project {
 	public Project() {
 	}
 
-	/**
-	 * <p>
-	 * A complete Project using a {@link ResultSet}.
-	 * </p>
-	 * 
-	 * @param results
-	 *            The results of a query
-	 * @throws SQLException
-	 */
-	public Project(ResultSet results) throws SQLException {
-		this(results.getInt(1), results.getString(2), results.getString(3), results.getInt(4), results.getDate(5),
-				results.getString(6), results.getString(7), results.getString(8),
-				EnumCategory.format(results.getString(9)));
-	}
-
-	public Project(ProjectsRecord rec, List<String> categories) {
-		this(rec.getProjectid(), rec.getName(), rec.getAuthor(), rec.getTotaldl(), rec.getUpdated(), rec.getDescription(), rec.getProjecturl(), rec.getThumbnail(), EnumCategory.toCategories(categories));
+	public Project(Record rec, List<String> categories) {
+		this(rec.get(PROJECTS.PROJECTID), rec.get(PROJECTS.NAME), rec.get(PROJECTS.AUTHOR), rec.get(PROJECTS.TOTALDL),
+				rec.get(PROJECTS.UPDATED), rec.get(PROJECTS.DESCRIPTION), rec.get(PROJECTS.PROJECTURL),
+				rec.get(PROJECTS.THUMBNAIL), EnumCategory.toCategories(categories));
 	}
 
 	/**

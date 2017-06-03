@@ -27,31 +27,31 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CategoriesRecord extends UpdatableRecordImpl<CategoriesRecord> implements Record2<Integer, String> {
 
-    private static final long serialVersionUID = 1565953708;
+    private static final long serialVersionUID = 1701540976;
 
     /**
-     * Setter for <code>franckyi_modcenter.categories.projectId</code>.
+     * Setter for <code>modcenter.categories.projectId</code>.
      */
     public void setProjectid(Integer value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>franckyi_modcenter.categories.projectId</code>.
+     * Getter for <code>modcenter.categories.projectId</code>.
      */
     public Integer getProjectid() {
         return (Integer) get(0);
     }
 
     /**
-     * Setter for <code>franckyi_modcenter.categories.category</code>.
+     * Setter for <code>modcenter.categories.category</code>.
      */
     public void setCategory(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>franckyi_modcenter.categories.category</code>.
+     * Getter for <code>modcenter.categories.category</code>.
      */
     public String getCategory() {
         return (String) get(1);

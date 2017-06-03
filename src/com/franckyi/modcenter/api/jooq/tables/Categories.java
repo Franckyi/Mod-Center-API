@@ -4,8 +4,8 @@
 package com.franckyi.modcenter.api.jooq.tables;
 
 
-import com.franckyi.modcenter.api.jooq.ModCenterDatabase;
 import com.franckyi.modcenter.api.jooq.Keys;
+import com.franckyi.modcenter.api.jooq.ModCenterDatabase;
 import com.franckyi.modcenter.api.jooq.tables.records.CategoriesRecord;
 
 import java.util.Arrays;
@@ -35,10 +35,10 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Categories extends TableImpl<CategoriesRecord> {
 
-    private static final long serialVersionUID = 1968003198;
+    private static final long serialVersionUID = 1432300158;
 
     /**
-     * The reference instance of <code>franckyi_modcenter.categories</code>
+     * The reference instance of <code>modcenter.categories</code>
      */
     public static final Categories CATEGORIES = new Categories();
 
@@ -51,24 +51,24 @@ public class Categories extends TableImpl<CategoriesRecord> {
     }
 
     /**
-     * The column <code>franckyi_modcenter.categories.projectId</code>.
+     * The column <code>modcenter.categories.projectId</code>.
      */
     public final TableField<CategoriesRecord, Integer> PROJECTID = createField("projectId", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.categories.category</code>.
+     * The column <code>modcenter.categories.category</code>.
      */
     public final TableField<CategoriesRecord, String> CATEGORY = createField("category", org.jooq.impl.SQLDataType.VARCHAR.length(100).nullable(false), this, "");
 
     /**
-     * Create a <code>franckyi_modcenter.categories</code> table reference
+     * Create a <code>modcenter.categories</code> table reference
      */
     public Categories() {
         this("categories", null);
     }
 
     /**
-     * Create an aliased <code>franckyi_modcenter.categories</code> table reference
+     * Create an aliased <code>modcenter.categories</code> table reference
      */
     public Categories(String alias) {
         this(alias, CATEGORIES);

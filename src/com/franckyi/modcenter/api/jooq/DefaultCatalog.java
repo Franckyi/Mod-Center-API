@@ -27,7 +27,7 @@ import org.jooq.impl.CatalogImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultCatalog extends CatalogImpl {
 
-    private static final long serialVersionUID = 1811146797;
+    private static final long serialVersionUID = 1869098394;
 
     /**
      * The reference instance of <code></code>
@@ -35,9 +35,9 @@ public class DefaultCatalog extends CatalogImpl {
     public static final DefaultCatalog DEFAULT_CATALOG = new DefaultCatalog();
 
     /**
-     * The schema <code>franckyi_modcenter</code>.
+     * The schema <code>modcenter</code>.
      */
-    public final ModCenterDatabase FRANCKYI_MODCENTER = com.franckyi.modcenter.api.jooq.ModCenterDatabase.MOD_CENTER_DATABASE;
+    public final ModCenterDatabase MODCENTER = com.franckyi.modcenter.api.jooq.ModCenterDatabase.MOD_CENTER_DATABASE;
 
     /**
      * No further instances allowed

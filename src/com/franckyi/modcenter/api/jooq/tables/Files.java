@@ -4,8 +4,8 @@
 package com.franckyi.modcenter.api.jooq.tables;
 
 
-import com.franckyi.modcenter.api.jooq.ModCenterDatabase;
 import com.franckyi.modcenter.api.jooq.Keys;
+import com.franckyi.modcenter.api.jooq.ModCenterDatabase;
 import com.franckyi.modcenter.api.jooq.tables.records.FilesRecord;
 
 import java.sql.Date;
@@ -36,10 +36,10 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Files extends TableImpl<FilesRecord> {
 
-    private static final long serialVersionUID = 1818776077;
+    private static final long serialVersionUID = 1150247115;
 
     /**
-     * The reference instance of <code>franckyi_modcenter.files</code>
+     * The reference instance of <code>modcenter.files</code>
      */
     public static final Files FILES = new Files();
 
@@ -52,54 +52,54 @@ public class Files extends TableImpl<FilesRecord> {
     }
 
     /**
-     * The column <code>franckyi_modcenter.files.fileId</code>.
+     * The column <code>modcenter.files.fileId</code>.
      */
     public final TableField<FilesRecord, Integer> FILEID = createField("fileId", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.files.fileName</code>.
+     * The column <code>modcenter.files.fileName</code>.
      */
     public final TableField<FilesRecord, String> FILENAME = createField("fileName", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.files.type</code>.
+     * The column <code>modcenter.files.type</code>.
      */
     public final TableField<FilesRecord, String> TYPE = createField("type", org.jooq.impl.SQLDataType.VARCHAR.length(7).nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.files.size</code>.
+     * The column <code>modcenter.files.size</code>.
      */
     public final TableField<FilesRecord, String> SIZE = createField("size", org.jooq.impl.SQLDataType.VARCHAR.length(20).nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.files.uploaded</code>.
+     * The column <code>modcenter.files.uploaded</code>.
      */
     public final TableField<FilesRecord, Date> UPLOADED = createField("uploaded", org.jooq.impl.SQLDataType.DATE.nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.files.downloads</code>.
+     * The column <code>modcenter.files.downloads</code>.
      */
     public final TableField<FilesRecord, Integer> DOWNLOADS = createField("downloads", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.files.fileUrl</code>.
+     * The column <code>modcenter.files.fileUrl</code>.
      */
     public final TableField<FilesRecord, String> FILEURL = createField("fileUrl", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.files.projectId</code>.
+     * The column <code>modcenter.files.projectId</code>.
      */
     public final TableField<FilesRecord, Integer> PROJECTID = createField("projectId", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * Create a <code>franckyi_modcenter.files</code> table reference
+     * Create a <code>modcenter.files</code> table reference
      */
     public Files() {
         this("files", null);
     }
 
     /**
-     * Create an aliased <code>franckyi_modcenter.files</code> table reference
+     * Create an aliased <code>modcenter.files</code> table reference
      */
     public Files(String alias) {
         this(alias, FILES);

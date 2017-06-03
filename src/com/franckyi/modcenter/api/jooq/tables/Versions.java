@@ -4,8 +4,8 @@
 package com.franckyi.modcenter.api.jooq.tables;
 
 
-import com.franckyi.modcenter.api.jooq.ModCenterDatabase;
 import com.franckyi.modcenter.api.jooq.Keys;
+import com.franckyi.modcenter.api.jooq.ModCenterDatabase;
 import com.franckyi.modcenter.api.jooq.tables.records.VersionsRecord;
 
 import java.util.Arrays;
@@ -35,10 +35,10 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Versions extends TableImpl<VersionsRecord> {
 
-    private static final long serialVersionUID = -1457966597;
+    private static final long serialVersionUID = 1123728745;
 
     /**
-     * The reference instance of <code>franckyi_modcenter.versions</code>
+     * The reference instance of <code>modcenter.versions</code>
      */
     public static final Versions VERSIONS = new Versions();
 
@@ -51,24 +51,24 @@ public class Versions extends TableImpl<VersionsRecord> {
     }
 
     /**
-     * The column <code>franckyi_modcenter.versions.fileId</code>.
+     * The column <code>modcenter.versions.fileId</code>.
      */
     public final TableField<VersionsRecord, Integer> FILEID = createField("fileId", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.versions.version</code>.
+     * The column <code>modcenter.versions.version</code>.
      */
     public final TableField<VersionsRecord, String> VERSION = createField("version", org.jooq.impl.SQLDataType.VARCHAR.length(20).nullable(false), this, "");
 
     /**
-     * Create a <code>franckyi_modcenter.versions</code> table reference
+     * Create a <code>modcenter.versions</code> table reference
      */
     public Versions() {
         this("versions", null);
     }
 
     /**
-     * Create an aliased <code>franckyi_modcenter.versions</code> table reference
+     * Create an aliased <code>modcenter.versions</code> table reference
      */
     public Versions(String alias) {
         this(alias, VERSIONS);

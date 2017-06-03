@@ -15,7 +15,7 @@ import javax.annotation.Generated;
 
 
 /**
- * Convenience access to all tables in franckyi_modcenter
+ * Convenience access to all tables in modcenter
  */
 @Generated(
     value = {
@@ -28,32 +28,32 @@ import javax.annotation.Generated;
 public class Tables {
 
     /**
-     * The table <code>franckyi_modcenter.categories</code>.
+     * The table <code>modcenter.categories</code>.
      */
     public static final Categories CATEGORIES = com.franckyi.modcenter.api.jooq.tables.Categories.CATEGORIES;
 
     /**
-     * The table <code>franckyi_modcenter.files</code>.
+     * The table <code>modcenter.files</code>.
      */
     public static final Files FILES = com.franckyi.modcenter.api.jooq.tables.Files.FILES;
 
     /**
-     * The table <code>franckyi_modcenter.optionalLibraries</code>.
+     * The table <code>modcenter.optionalLibraries</code>.
      */
     public static final Optionallibraries OPTIONALLIBRARIES = com.franckyi.modcenter.api.jooq.tables.Optionallibraries.OPTIONALLIBRARIES;
 
     /**
-     * The table <code>franckyi_modcenter.projects</code>.
+     * The table <code>modcenter.projects</code>.
      */
     public static final Projects PROJECTS = com.franckyi.modcenter.api.jooq.tables.Projects.PROJECTS;
 
     /**
-     * The table <code>franckyi_modcenter.requiredLibraries</code>.
+     * The table <code>modcenter.requiredLibraries</code>.
      */
     public static final Requiredlibraries REQUIREDLIBRARIES = com.franckyi.modcenter.api.jooq.tables.Requiredlibraries.REQUIREDLIBRARIES;
 
     /**
-     * The table <code>franckyi_modcenter.versions</code>.
+     * The table <code>modcenter.versions</code>.
      */
     public static final Versions VERSIONS = com.franckyi.modcenter.api.jooq.tables.Versions.VERSIONS;
 }

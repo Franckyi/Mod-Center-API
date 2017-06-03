@@ -35,40 +35,40 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModCenterDatabase extends SchemaImpl {
 
-    private static final long serialVersionUID = -1854663479;
+    private static final long serialVersionUID = -1642061795;
 
     /**
-     * The reference instance of <code>franckyi_modcenter</code>
+     * The reference instance of <code>modcenter</code>
      */
     public static final ModCenterDatabase MOD_CENTER_DATABASE = new ModCenterDatabase();
 
     /**
-     * The table <code>franckyi_modcenter.categories</code>.
+     * The table <code>modcenter.categories</code>.
      */
     public final Categories CATEGORIES = com.franckyi.modcenter.api.jooq.tables.Categories.CATEGORIES;
 
     /**
-     * The table <code>franckyi_modcenter.files</code>.
+     * The table <code>modcenter.files</code>.
      */
     public final Files FILES = com.franckyi.modcenter.api.jooq.tables.Files.FILES;
 
     /**
-     * The table <code>franckyi_modcenter.optionalLibraries</code>.
+     * The table <code>modcenter.optionalLibraries</code>.
      */
     public final Optionallibraries OPTIONALLIBRARIES = com.franckyi.modcenter.api.jooq.tables.Optionallibraries.OPTIONALLIBRARIES;
 
     /**
-     * The table <code>franckyi_modcenter.projects</code>.
+     * The table <code>modcenter.projects</code>.
      */
     public final Projects PROJECTS = com.franckyi.modcenter.api.jooq.tables.Projects.PROJECTS;
 
     /**
-     * The table <code>franckyi_modcenter.requiredLibraries</code>.
+     * The table <code>modcenter.requiredLibraries</code>.
      */
     public final Requiredlibraries REQUIREDLIBRARIES = com.franckyi.modcenter.api.jooq.tables.Requiredlibraries.REQUIREDLIBRARIES;
 
     /**
-     * The table <code>franckyi_modcenter.versions</code>.
+     * The table <code>modcenter.versions</code>.
      */
     public final Versions VERSIONS = com.franckyi.modcenter.api.jooq.tables.Versions.VERSIONS;
 
@@ -76,7 +76,7 @@ public class ModCenterDatabase extends SchemaImpl {
      * No further instances allowed
      */
     private ModCenterDatabase() {
-        super("franckyi_modcenter", null);
+        super("modcenter", null);
     }
 
 

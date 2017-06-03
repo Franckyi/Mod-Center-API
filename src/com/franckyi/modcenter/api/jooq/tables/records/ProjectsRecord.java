@@ -30,115 +30,115 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ProjectsRecord extends UpdatableRecordImpl<ProjectsRecord> implements Record8<Integer, String, String, Integer, Date, String, String, String> {
 
-    private static final long serialVersionUID = -12163380;
+    private static final long serialVersionUID = -52140954;
 
     /**
-     * Setter for <code>franckyi_modcenter.projects.projectId</code>.
+     * Setter for <code>modcenter.projects.projectId</code>.
      */
     public void setProjectid(Integer value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>franckyi_modcenter.projects.projectId</code>.
+     * Getter for <code>modcenter.projects.projectId</code>.
      */
     public Integer getProjectid() {
         return (Integer) get(0);
     }
 
     /**
-     * Setter for <code>franckyi_modcenter.projects.name</code>.
+     * Setter for <code>modcenter.projects.name</code>.
      */
     public void setName(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>franckyi_modcenter.projects.name</code>.
+     * Getter for <code>modcenter.projects.name</code>.
      */
     public String getName() {
         return (String) get(1);
     }
 
     /**
-     * Setter for <code>franckyi_modcenter.projects.author</code>.
+     * Setter for <code>modcenter.projects.author</code>.
      */
     public void setAuthor(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>franckyi_modcenter.projects.author</code>.
+     * Getter for <code>modcenter.projects.author</code>.
      */
     public String getAuthor() {
         return (String) get(2);
     }
 
     /**
-     * Setter for <code>franckyi_modcenter.projects.totalDl</code>.
+     * Setter for <code>modcenter.projects.totalDl</code>.
      */
     public void setTotaldl(Integer value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>franckyi_modcenter.projects.totalDl</code>.
+     * Getter for <code>modcenter.projects.totalDl</code>.
      */
     public Integer getTotaldl() {
         return (Integer) get(3);
     }
 
     /**
-     * Setter for <code>franckyi_modcenter.projects.updated</code>.
+     * Setter for <code>modcenter.projects.updated</code>.
      */
     public void setUpdated(Date value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>franckyi_modcenter.projects.updated</code>.
+     * Getter for <code>modcenter.projects.updated</code>.
      */
     public Date getUpdated() {
         return (Date) get(4);
     }
 
     /**
-     * Setter for <code>franckyi_modcenter.projects.description</code>.
+     * Setter for <code>modcenter.projects.description</code>.
      */
     public void setDescription(String value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>franckyi_modcenter.projects.description</code>.
+     * Getter for <code>modcenter.projects.description</code>.
      */
     public String getDescription() {
         return (String) get(5);
     }
 
     /**
-     * Setter for <code>franckyi_modcenter.projects.projectUrl</code>.
+     * Setter for <code>modcenter.projects.projectUrl</code>.
      */
     public void setProjecturl(String value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>franckyi_modcenter.projects.projectUrl</code>.
+     * Getter for <code>modcenter.projects.projectUrl</code>.
      */
     public String getProjecturl() {
         return (String) get(6);
     }
 
     /**
-     * Setter for <code>franckyi_modcenter.projects.thumbnail</code>.
+     * Setter for <code>modcenter.projects.thumbnail</code>.
      */
     public void setThumbnail(String value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>franckyi_modcenter.projects.thumbnail</code>.
+     * Getter for <code>modcenter.projects.thumbnail</code>.
      */
     public String getThumbnail() {
         return (String) get(7);

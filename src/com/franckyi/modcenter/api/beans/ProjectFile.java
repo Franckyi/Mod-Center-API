@@ -1,11 +1,14 @@
 package com.franckyi.modcenter.api.beans;
 
+import static com.franckyi.modcenter.api.jooq.Tables.FILES;
+
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jooq.Record;
+
 import com.franckyi.modcenter.api.beans.enums.EnumFileType;
-import com.franckyi.modcenter.api.jooq.tables.records.FilesRecord;
 
 /**
  * <p>
@@ -57,9 +60,9 @@ public class ProjectFile {
 	 * @param requiredLibraries
 	 * @param projectId
 	 */
-	public ProjectFile(int fileId, String fileName, EnumFileType type, String size, Date uploaded, List<String> versions,
-			int downloads, String fileUrl, List<Project> optionalLibraries, List<Project> requiredLibraries,
-			Project project) {
+	public ProjectFile(int fileId, String fileName, EnumFileType type, String size, Date uploaded,
+			List<String> versions, int downloads, String fileUrl, List<Project> optionalLibraries,
+			List<Project> requiredLibraries, Project project) {
 		this.fileId = fileId;
 		this.fileName = fileName;
 		this.type = type;
@@ -81,8 +84,11 @@ public class ProjectFile {
 	public ProjectFile() {
 	}
 
-	public ProjectFile(FilesRecord r, List<String> versions, List<Project> optionalLibraries, List<Project> requiredLibraries, Project p) {
-		this(r.getFileid(), r.getFilename(), EnumFileType.toType(r.getType()), r.getSize(), r.getUploaded(), versions, r.getDownloads(), r.getFileurl(), optionalLibraries, requiredLibraries, p);
+	public ProjectFile(Record r, List<String> versions, List<Project> optionalLibraries,
+			List<Project> requiredLibraries, Project p) {
+		this(r.get(FILES.FILEID), r.get(FILES.FILENAME), EnumFileType.toType(r.get(FILES.TYPE)), r.get(FILES.SIZE),
+				r.get(FILES.UPLOADED), versions, r.get(FILES.DOWNLOADS), r.get(FILES.FILEURL), optionalLibraries,
+				requiredLibraries, p);
 	}
 
 	/**

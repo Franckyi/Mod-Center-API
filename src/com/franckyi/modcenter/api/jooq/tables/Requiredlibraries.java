@@ -4,8 +4,8 @@
 package com.franckyi.modcenter.api.jooq.tables;
 
 
-import com.franckyi.modcenter.api.jooq.ModCenterDatabase;
 import com.franckyi.modcenter.api.jooq.Keys;
+import com.franckyi.modcenter.api.jooq.ModCenterDatabase;
 import com.franckyi.modcenter.api.jooq.tables.records.RequiredlibrariesRecord;
 
 import java.util.Arrays;
@@ -35,10 +35,10 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Requiredlibraries extends TableImpl<RequiredlibrariesRecord> {
 
-    private static final long serialVersionUID = -947869409;
+    private static final long serialVersionUID = -1454832717;
 
     /**
-     * The reference instance of <code>franckyi_modcenter.requiredLibraries</code>
+     * The reference instance of <code>modcenter.requiredLibraries</code>
      */
     public static final Requiredlibraries REQUIREDLIBRARIES = new Requiredlibraries();
 
@@ -51,24 +51,24 @@ public class Requiredlibraries extends TableImpl<RequiredlibrariesRecord> {
     }
 
     /**
-     * The column <code>franckyi_modcenter.requiredLibraries.fileId</code>.
+     * The column <code>modcenter.requiredLibraries.fileId</code>.
      */
     public final TableField<RequiredlibrariesRecord, Integer> FILEID = createField("fileId", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.requiredLibraries.projectId</code>.
+     * The column <code>modcenter.requiredLibraries.projectId</code>.
      */
     public final TableField<RequiredlibrariesRecord, Integer> PROJECTID = createField("projectId", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * Create a <code>franckyi_modcenter.requiredLibraries</code> table reference
+     * Create a <code>modcenter.requiredLibraries</code> table reference
      */
     public Requiredlibraries() {
         this("requiredLibraries", null);
     }
 
     /**
-     * Create an aliased <code>franckyi_modcenter.requiredLibraries</code> table reference
+     * Create an aliased <code>modcenter.requiredLibraries</code> table reference
      */
     public Requiredlibraries(String alias) {
         this(alias, REQUIREDLIBRARIES);

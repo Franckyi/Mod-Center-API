@@ -4,8 +4,8 @@
 package com.franckyi.modcenter.api.jooq.tables;
 
 
-import com.franckyi.modcenter.api.jooq.ModCenterDatabase;
 import com.franckyi.modcenter.api.jooq.Keys;
+import com.franckyi.modcenter.api.jooq.ModCenterDatabase;
 import com.franckyi.modcenter.api.jooq.tables.records.ProjectsRecord;
 
 import java.sql.Date;
@@ -35,10 +35,10 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Projects extends TableImpl<ProjectsRecord> {
 
-    private static final long serialVersionUID = 536380353;
+    private static final long serialVersionUID = 1376763651;
 
     /**
-     * The reference instance of <code>franckyi_modcenter.projects</code>
+     * The reference instance of <code>modcenter.projects</code>
      */
     public static final Projects PROJECTS = new Projects();
 
@@ -51,54 +51,54 @@ public class Projects extends TableImpl<ProjectsRecord> {
     }
 
     /**
-     * The column <code>franckyi_modcenter.projects.projectId</code>.
+     * The column <code>modcenter.projects.projectId</code>.
      */
     public final TableField<ProjectsRecord, Integer> PROJECTID = createField("projectId", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.projects.name</code>.
+     * The column <code>modcenter.projects.name</code>.
      */
     public final TableField<ProjectsRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.projects.author</code>.
+     * The column <code>modcenter.projects.author</code>.
      */
     public final TableField<ProjectsRecord, String> AUTHOR = createField("author", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.projects.totalDl</code>.
+     * The column <code>modcenter.projects.totalDl</code>.
      */
     public final TableField<ProjectsRecord, Integer> TOTALDL = createField("totalDl", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.projects.updated</code>.
+     * The column <code>modcenter.projects.updated</code>.
      */
     public final TableField<ProjectsRecord, Date> UPDATED = createField("updated", org.jooq.impl.SQLDataType.DATE.nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.projects.description</code>.
+     * The column <code>modcenter.projects.description</code>.
      */
     public final TableField<ProjectsRecord, String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.VARCHAR.length(256).nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.projects.projectUrl</code>.
+     * The column <code>modcenter.projects.projectUrl</code>.
      */
     public final TableField<ProjectsRecord, String> PROJECTURL = createField("projectUrl", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.projects.thumbnail</code>.
+     * The column <code>modcenter.projects.thumbnail</code>.
      */
     public final TableField<ProjectsRecord, String> THUMBNAIL = createField("thumbnail", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false), this, "");
 
     /**
-     * Create a <code>franckyi_modcenter.projects</code> table reference
+     * Create a <code>modcenter.projects</code> table reference
      */
     public Projects() {
         this("projects", null);
     }
 
     /**
-     * Create an aliased <code>franckyi_modcenter.projects</code> table reference
+     * Create an aliased <code>modcenter.projects</code> table reference
      */
     public Projects(String alias) {
         this(alias, PROJECTS);

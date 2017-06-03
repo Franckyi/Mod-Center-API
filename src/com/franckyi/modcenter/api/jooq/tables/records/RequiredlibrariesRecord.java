@@ -27,31 +27,31 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RequiredlibrariesRecord extends UpdatableRecordImpl<RequiredlibrariesRecord> implements Record2<Integer, Integer> {
 
-    private static final long serialVersionUID = 1360539343;
+    private static final long serialVersionUID = 1416147453;
 
     /**
-     * Setter for <code>franckyi_modcenter.requiredLibraries.fileId</code>.
+     * Setter for <code>modcenter.requiredLibraries.fileId</code>.
      */
     public void setFileid(Integer value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>franckyi_modcenter.requiredLibraries.fileId</code>.
+     * Getter for <code>modcenter.requiredLibraries.fileId</code>.
      */
     public Integer getFileid() {
         return (Integer) get(0);
     }
 
     /**
-     * Setter for <code>franckyi_modcenter.requiredLibraries.projectId</code>.
+     * Setter for <code>modcenter.requiredLibraries.projectId</code>.
      */
     public void setProjectid(Integer value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>franckyi_modcenter.requiredLibraries.projectId</code>.
+     * Getter for <code>modcenter.requiredLibraries.projectId</code>.
      */
     public Integer getProjectid() {
         return (Integer) get(1);

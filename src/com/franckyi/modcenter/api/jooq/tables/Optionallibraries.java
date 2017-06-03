@@ -4,8 +4,8 @@
 package com.franckyi.modcenter.api.jooq.tables;
 
 
-import com.franckyi.modcenter.api.jooq.ModCenterDatabase;
 import com.franckyi.modcenter.api.jooq.Keys;
+import com.franckyi.modcenter.api.jooq.ModCenterDatabase;
 import com.franckyi.modcenter.api.jooq.tables.records.OptionallibrariesRecord;
 
 import java.util.Arrays;
@@ -35,10 +35,10 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Optionallibraries extends TableImpl<OptionallibrariesRecord> {
 
-    private static final long serialVersionUID = -1886306555;
+    private static final long serialVersionUID = -946124625;
 
     /**
-     * The reference instance of <code>franckyi_modcenter.optionalLibraries</code>
+     * The reference instance of <code>modcenter.optionalLibraries</code>
      */
     public static final Optionallibraries OPTIONALLIBRARIES = new Optionallibraries();
 
@@ -51,24 +51,24 @@ public class Optionallibraries extends TableImpl<OptionallibrariesRecord> {
     }
 
     /**
-     * The column <code>franckyi_modcenter.optionalLibraries.fileId</code>.
+     * The column <code>modcenter.optionalLibraries.fileId</code>.
      */
     public final TableField<OptionallibrariesRecord, Integer> FILEID = createField("fileId", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>franckyi_modcenter.optionalLibraries.projectId</code>.
+     * The column <code>modcenter.optionalLibraries.projectId</code>.
      */
     public final TableField<OptionallibrariesRecord, Integer> PROJECTID = createField("projectId", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * Create a <code>franckyi_modcenter.optionalLibraries</code> table reference
+     * Create a <code>modcenter.optionalLibraries</code> table reference
      */
     public Optionallibraries() {
         this("optionalLibraries", null);
     }
 
     /**
-     * Create an aliased <code>franckyi_modcenter.optionalLibraries</code> table reference
+     * Create an aliased <code>modcenter.optionalLibraries</code> table reference
      */
     public Optionallibraries(String alias) {
         this(alias, OPTIONALLIBRARIES);
