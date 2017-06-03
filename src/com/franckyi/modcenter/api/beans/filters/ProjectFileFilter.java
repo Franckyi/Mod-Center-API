@@ -1,5 +1,6 @@
 package com.franckyi.modcenter.api.beans.filters;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,6 +62,13 @@ public class ProjectFileFilter {
 	 */
 	public List<EnumFileType> getTypes() {
 		return types;
+	}
+	
+	public List<String> getTypesKeys() {
+		List<String> list = new ArrayList<>();
+		for(EnumFileType type : types)
+			list.add(type.getDbKey());
+		return list;
 	}
 
 }

@@ -1,49 +1,43 @@
 package com.franckyi.modcenter.api;
 
+import static com.franckyi.modcenter.api.jooq.Tables.*;
+
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Record1;
+import org.jooq.Result;
+import org.jooq.SQLDialect;
+import org.jooq.SortField;
+import org.jooq.impl.DSL;
+
 import com.franckyi.modcenter.api.beans.Project;
 import com.franckyi.modcenter.api.beans.ProjectFile;
-import com.franckyi.modcenter.api.beans.UpdateResult;
 import com.franckyi.modcenter.api.beans.enums.EnumFileType;
 import com.franckyi.modcenter.api.beans.filters.ProjectFileFilter;
 import com.franckyi.modcenter.api.beans.filters.ProjectFilter;
 import com.franckyi.modcenter.api.beans.filters.SortedProjectFilter;
-import com.franckyi.modcenter.api.misc.VersionComparator;
+import com.franckyi.modcenter.api.jooq.tables.records.CategoriesRecord;
+import com.franckyi.modcenter.api.jooq.tables.records.FilesRecord;
+import com.franckyi.modcenter.api.jooq.tables.records.OptionallibrariesRecord;
+import com.franckyi.modcenter.api.jooq.tables.records.ProjectsRecord;
+import com.franckyi.modcenter.api.jooq.tables.records.RequiredlibrariesRecord;
+import com.franckyi.modcenter.api.jooq.tables.records.VersionsRecord;
 
-/**
- * <p>
- * The main class for the Mod Center API. This Class is used to get information
- * from the mod center.
- * <ul>
- * <li>Firstly, you have to initialize it using {@link ModCenterAPI#init}
- * method.</li>
- * <li>Then, you can use static methods to get informations you want.</li>
- * <li>Finally, you should use {@link ModCenterAPI#close} method when you stop
- * using the connection.</li>
- * </ul>
- * </p>
- * 
- * @author Franckyi
- *
- */
 public class ModCenterAPI {
-
-	private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 
 	private static final String JDBC_CONNECTION = "jdbc:mysql://mysql-franckyi.alwaysdata.net/franckyi_modcenter";
 	private static final String JDBC_USERNAME = "franckyi_public";
 	private static final String JDBC_PASSWORD = "public";
 
 	private static Connection conn;
+	private static DSLContext ctx;
 
 	/**
 	 * <p>
@@ -67,11 +61,13 @@ public class ModCenterAPI {
 		return conn;
 	}
 
+	public static DSLContext getDSLContext() {
+		return ctx;
+	}
+
 	/**
 	 * <p>
 	 * Returns a {@link ProjectFile} from the database with the given name.
-	 * <strong><u>If the file isn't found, it returns
-	 * <code>null</code></u></strong>.
 	 * </p>
 	 * 
 	 * @param name
@@ -80,24 +76,11 @@ public class ModCenterAPI {
 	 * @throws SQLException
 	 */
 	public static Optional<ProjectFile> getFileFromName(String name) throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM files WHERE fileName LIKE ?");
-		stmt.setString(1, "%" + name + "%");
-		ResultSet results = stmt.executeQuery();
-		if (results.next())
-			return Optional.of(new ProjectFile(results));
+		String nameLike = "%" + name + "%";
+		Result<FilesRecord> rec = ctx.selectFrom(FILES).where(FILES.FILENAME.like(nameLike)).fetch();
+		if (rec.size() == 1)
+			return newFile(rec.get(0));
 		return Optional.empty();
-	}
-
-	@Deprecated
-	public static List<ProjectFile> getFiles(int page, int count) throws SQLException {
-		List<ProjectFile> files = new ArrayList<>();
-		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM files LIMIT ?, ?;");
-		stmt.setInt(1, (page - 1) * count);
-		stmt.setInt(2, count);
-		ResultSet results = stmt.executeQuery();
-		while (results.next())
-			files.add(new ProjectFile(results));
-		return files;
 	}
 
 	/**
@@ -115,15 +98,16 @@ public class ModCenterAPI {
 	 */
 	public static List<ProjectFile> getFilesFromProject(Project project, ProjectFileFilter filter) throws SQLException {
 		List<ProjectFile> files = new ArrayList<>();
-		PreparedStatement stmt = conn
-				.prepareStatement("SELECT * FROM files WHERE projectId = ? AND version LIKE ? ORDER BY fileId DESC;");
-		stmt.setInt(1, project.getProjectId());
-		stmt.setString(2, "%" + filter.getVersion() + "%");
-		ResultSet results = stmt.executeQuery();
-		while (results.next()) {
-			ProjectFile file = new ProjectFile(results);
-			if (filter.getTypes().contains(file.getType()))
-				files.add(file);
+		Result<FilesRecord> rec = ctx.selectFrom(FILES).where(FILES.PROJECTID.eq(project.getProjectId()))
+				.and(FILES.TYPE.in(filter.getTypesKeys())).fetch();
+		for (FilesRecord file : rec) {
+			Result<VersionsRecord> versions = ctx.selectFrom(VERSIONS).where(VERSIONS.FILEID.eq(file.getFileid()))
+					.fetch();
+			if (versions.getValues(VERSIONS.VERSION).contains(filter.getVersion())) {
+				Optional<ProjectFile> pf = newFile(file);
+				if (pf.isPresent())
+					files.add(pf.get());
+			}
 		}
 		return files;
 	}
@@ -131,8 +115,7 @@ public class ModCenterAPI {
 	/**
 	 * <p>
 	 * Returns the {@link Project} where the given {@link ProjectFile} comes
-	 * from. <strong><u>If the project isn't found, it returns
-	 * <code>null</code></u></strong>.
+	 * from.
 	 * </p>
 	 * 
 	 * @param file
@@ -141,11 +124,10 @@ public class ModCenterAPI {
 	 * @throws SQLException
 	 */
 	public static Optional<Project> getProjectFromFile(ProjectFile file) throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM projects WHERE projectId = ?");
-		stmt.setInt(1, file.getProjectId());
-		ResultSet results = stmt.executeQuery();
-		if (results.next())
-			return Optional.of(new Project(results));
+		Result<ProjectsRecord> rec = ctx.selectFrom(PROJECTS)
+				.where(PROJECTS.PROJECTID.eq(file.getProject().getProjectId())).fetch();
+		if (rec.size() == 1)
+			return Optional.of(newProject(rec.get(0)));
 		return Optional.empty();
 	}
 
@@ -160,11 +142,9 @@ public class ModCenterAPI {
 	 * @throws SQLException
 	 */
 	public static Optional<Project> getProjectFromId(int id) throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM projects WHERE projects.projectId = ?;");
-		stmt.setInt(1, id);
-		ResultSet results = stmt.executeQuery();
-		if (results.next())
-			return Optional.of(new Project(results));
+		Result<ProjectsRecord> rec = ctx.selectFrom(PROJECTS).where(PROJECTS.PROJECTID.eq(id)).fetch();
+		if (rec.size() == 1)
+			return Optional.of(newProject(rec.get(0)));
 		return Optional.empty();
 	}
 
@@ -186,19 +166,19 @@ public class ModCenterAPI {
 	 */
 	public static List<Project> getProjects(int page, int count, SortedProjectFilter filter) throws SQLException {
 		List<Project> projects = new ArrayList<>();
-		PreparedStatement stmt = conn.prepareStatement(
-				"SELECT * FROM projects WHERE projects.projectId IN (SELECT files.projectId FROM files WHERE version LIKE ?) AND (name LIKE ? OR author LIKE ? OR description LIKE ?) AND categories LIKE ? ORDER BY "
-						+ filter.getSortFilter().getValue() + toOrder(filter.getOrder()) + " LIMIT ?, ?;");
-		stmt.setString(1, "%" + filter.getVersion() + "%");
-		stmt.setString(2, "%" + filter.getQuery() + "%");
-		stmt.setString(3, "%" + filter.getQuery() + "%");
-		stmt.setString(4, "%" + filter.getQuery() + "%");
-		stmt.setString(5, "%" + filter.getCategory().getDbKey() + "%");
-		stmt.setInt(6, (page - 1) * count);
-		stmt.setInt(7, count);
-		ResultSet results = stmt.executeQuery();
-		while (results.next())
-			projects.add(new Project(results));
+		String query = "%" + filter.getQuery() + "%";
+		SortField<?> order = (filter.getOrder()) ? filter.getSortFilter().getField().asc()
+				: filter.getSortFilter().getField().desc();
+		Result<Record1<Integer>> sub = ctx.select(FILES.PROJECTID).from(FILES).innerJoin(VERSIONS)
+				.on(FILES.FILEID.eq(VERSIONS.FILEID)).where(VERSIONS.VERSION.like("%" + filter.getVersion() + "%"))
+				.fetch();
+		Result<Record> rec = ctx.select(PROJECTS.fields()).from(PROJECTS).innerJoin(CATEGORIES)
+				.on(PROJECTS.PROJECTID.eq(CATEGORIES.PROJECTID)).where(PROJECTS.PROJECTID.in(sub))
+				.and((PROJECTS.NAME.like(query)).or(PROJECTS.AUTHOR.like(query)).or(PROJECTS.DESCRIPTION.like(query)))
+				.and(CATEGORIES.CATEGORY.eq(filter.getCategory().getDbKey())).orderBy(order)
+				.limit((page - 1) * count, count).fetch();
+		for (Record record : rec)
+			projects.add(newProject((ProjectsRecord) record));
 		return projects;
 	}
 
@@ -216,16 +196,16 @@ public class ModCenterAPI {
 	 * @throws SQLException
 	 */
 	public static int getProjectsPageNumber(int count, ProjectFilter filter) throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement(
-				"SELECT COUNT(*) FROM projects WHERE projects.projectId IN (SELECT files.projectId FROM files WHERE version LIKE ?) AND (name LIKE ? OR author LIKE ? OR description LIKE ?) AND categories LIKE ?");
-		stmt.setString(1, "%" + filter.getVersion() + "%");
-		stmt.setString(2, "%" + filter.getQuery() + "%");
-		stmt.setString(3, "%" + filter.getQuery() + "%");
-		stmt.setString(4, "%" + filter.getQuery() + "%");
-		stmt.setString(5, "%" + filter.getCategory().getDbKey() + "%");
-		ResultSet results = stmt.executeQuery();
-		if (results.next())
-			return results.getInt(1) / count + 1;
+		String query = "%" + filter.getQuery() + "%";
+		Result<Record1<Integer>> sub = ctx.select(FILES.PROJECTID).from(FILES).innerJoin(VERSIONS)
+				.on(FILES.FILEID.eq(VERSIONS.FILEID)).where(VERSIONS.VERSION.like("%" + filter.getVersion() + "%"))
+				.fetch();
+		Result<Record1<Integer>> rec = ctx.selectCount().from(PROJECTS).innerJoin(CATEGORIES)
+				.on(PROJECTS.PROJECTID.eq(CATEGORIES.PROJECTID)).where(PROJECTS.PROJECTID.in(sub))
+				.and((PROJECTS.NAME.like(query)).or(PROJECTS.AUTHOR.like(query)).or(PROJECTS.DESCRIPTION.like(query)))
+				.and(CATEGORIES.CATEGORY.eq(filter.getCategory().getDbKey())).fetch();
+		if (rec.size() == 1)
+			return rec.get(0).value1();
 		return 0;
 	}
 
@@ -240,11 +220,9 @@ public class ModCenterAPI {
 	 */
 	public static List<String> getVersions() throws SQLException {
 		List<String> list = new ArrayList<>();
-		ResultSet results = conn.createStatement()
-				.executeQuery("SELECT DISTINCT version FROM files WHERE version NOT LIKE '%CB%' AND version != '-';");
-		while (results.next())
-			list.add(results.getString(1));
-		list.sort(new VersionComparator());
+		Result<Record1<String>> rec = ctx.selectDistinct(VERSIONS.VERSION).from(VERSIONS).fetch();
+		for (Record1<String> str : rec)
+			list.add(str.value1());
 		return list;
 	}
 
@@ -261,13 +239,10 @@ public class ModCenterAPI {
 	 */
 	public static List<String> getVersions(Project project) throws SQLException {
 		List<String> list = new ArrayList<>();
-		PreparedStatement stmt = conn.prepareStatement(
-				"SELECT DISTINCT version FROM files WHERE projectId = ? AND version NOT LIKE '%CB%' AND version != '-';");
-		stmt.setInt(1, project.getProjectId());
-		ResultSet results = stmt.executeQuery();
-		while (results.next())
-			list.add(results.getString(1));
-		list.sort(new VersionComparator());
+		Result<Record1<String>> rec = ctx.selectDistinct(VERSIONS.VERSION).from(VERSIONS).innerJoin(FILES)
+				.on(VERSIONS.FILEID.eq(FILES.FILEID)).where(FILES.PROJECTID.eq(project.getProjectId())).fetch();
+		for (Record1<String> str : rec)
+			list.add(str.value1());
 		return list;
 	}
 
@@ -280,9 +255,9 @@ public class ModCenterAPI {
 	 * @throws ClassNotFoundException
 	 */
 	public static void init() throws SQLException, ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
 		DriverManager.setLoginTimeout(5);
 		conn = DriverManager.getConnection(JDBC_CONNECTION, JDBC_USERNAME, JDBC_PASSWORD);
+		ctx = DSL.using(conn, SQLDialect.MYSQL);
 	}
 
 	/**
@@ -299,108 +274,9 @@ public class ModCenterAPI {
 	 * @throws ClassNotFoundException
 	 */
 	public static void init(String username, String password) throws SQLException, ClassNotFoundException {
-		Class.forName(JDBC_DRIVER);
 		DriverManager.setLoginTimeout(5);
 		conn = DriverManager.getConnection(JDBC_CONNECTION, username, password);
-	}
-
-	/**
-	 * <p>
-	 * Executes a user-defined query, with or without parameters. See how works
-	 * {@link PreparedStatement} for more informations. The supported parameters
-	 * types are : {@link String}, {@link Integer}, {@link Date}, {@link Long},
-	 * {@link Float}, {@link Double}, {@link Boolean} and {@link Short}.
-	 * </p>
-	 * 
-	 * @param query
-	 *            The SQL query string
-	 * @param parameters
-	 *            The parameters
-	 * @return
-	 * @throws SQLException
-	 * @throws Exception
-	 *             if the parameter type isn't supported
-	 */
-	public static ResultSet query(String query, Object... parameters) throws SQLException, Exception {
-		if (parameters.length == 0)
-			return conn.createStatement().executeQuery(query);
-		else {
-			PreparedStatement stmt = conn.prepareStatement(query);
-			for (int i = 1; i <= parameters.length; i++) {
-				if (parameters[i] instanceof String)
-					stmt.setString(i, (String) parameters[i]);
-				else if (parameters[i] instanceof Integer)
-					stmt.setInt(i, (Integer) parameters[i]);
-				else if (parameters[i] instanceof Date)
-					stmt.setDate(i, (Date) parameters[i]);
-				else if (parameters[i] instanceof Long)
-					stmt.setLong(i, (Long) parameters[i]);
-				else if (parameters[i] instanceof Float)
-					stmt.setFloat(i, (Float) parameters[i]);
-				else if (parameters[i] instanceof Double)
-					stmt.setDouble(i, (Double) parameters[i]);
-				else if (parameters[i] instanceof Boolean)
-					stmt.setBoolean(i, (Boolean) parameters[i]);
-				else if (parameters[i] instanceof Short)
-					stmt.setShort(i, (Short) parameters[i]);
-				else
-					throw new Exception("Unknown parameter type at position " + (i - 1));
-			}
-			return stmt.executeQuery();
-		}
-	}
-
-	private static String toOrder(boolean order) {
-		if (order)
-			return " ASC";
-		return " DESC";
-	}
-
-	/**
-	 * <p>
-	 * This method is used to check for updates. It will return an
-	 * {@link UpdateResult}. Look at the documentation of this class for more
-	 * informations.
-	 * </p>
-	 * 
-	 * @param file
-	 *            The project file to update
-	 * @param checkAlpha
-	 *            True if you want to check if there's a new alpha file
-	 * @param checkBeta
-	 *            True if you want to check if there's a new beta file
-	 * @return The update result
-	 * @throws SQLException
-	 */
-	public static UpdateResult update(ProjectFile file, boolean checkAlpha, boolean checkBeta) throws SQLException {
-		UpdateResult res = new UpdateResult();
-		PreparedStatement stmt = conn.prepareStatement(
-				"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? AND type IN (?, ?, ?) ORDER BY fileId DESC;");
-		stmt.setInt(1, file.getProjectId());
-		stmt.setInt(2, file.getFileId());
-		stmt.setString(3, file.getVersion());
-		stmt.setString(4, EnumFileType.RELEASE.getDbKey());
-		stmt.setString(5, (checkBeta) ? EnumFileType.BETA.getDbKey() : "");
-		stmt.setString(6, (checkAlpha) ? EnumFileType.BETA.getDbKey() : "");
-		ResultSet results = stmt.executeQuery();
-		while (results.next()) {
-			ProjectFile newFile = new ProjectFile(results);
-			System.out.println(newFile.getFileName());
-			if (newFile.getType().equals(EnumFileType.RELEASE)) {
-				res.getNewFiles().add(newFile);
-				if (res.getLatestRelease() == null)
-					res.setLatestRelease(newFile);
-			} else if (newFile.getType().equals(EnumFileType.BETA)) {
-				res.getNewFiles().add(newFile);
-				if (res.getLatestBeta() == null)
-					res.setLatestBeta(newFile);
-			} else if (newFile.getType().equals(EnumFileType.ALPHA)) {
-				res.getNewFiles().add(newFile);
-				if (res.getLatestAlpha() == null)
-					res.setLatestAlpha(newFile);
-			}
-		}
-		return res;
+		ctx = DSL.using(conn, SQLDialect.MYSQL);
 	}
 
 	/**
@@ -414,8 +290,6 @@ public class ModCenterAPI {
 	 * releases.</li>
 	 * <li>If the file is an alpha file, it will check for any new file.</li>
 	 * </ul>
-	 * <u><strong>If no updates are found, it returns
-	 * <code>null</code>.</strong></u>
 	 * </p>
 	 * 
 	 * @param file
@@ -423,23 +297,52 @@ public class ModCenterAPI {
 	 * @return The updated file
 	 * @throws SQLException
 	 */
-	public static Optional<ProjectFile> updateSmart(ProjectFile file) throws SQLException {
-		PreparedStatement stmt;
-		stmt = conn.prepareStatement(
-				"SELECT * FROM files WHERE projectId = ? AND fileId > ? AND version = ? AND type IN (?, ?, ?) ORDER BY fileId DESC LIMIT 0, 1;");
-		stmt.setInt(1, file.getProjectId());
-		stmt.setInt(2, file.getFileId());
-		stmt.setString(3, file.getVersion());
-		int i = 0;
+	public static Optional<ProjectFile> update(ProjectFile file) throws SQLException {
+		List<String> types = new ArrayList<>();
 		for (EnumFileType type : EnumFileType.values())
-			if (!type.equals(EnumFileType.ANY)) {
-				stmt.setString(4 + i, (type.getLevel() > file.getType().getLevel()) ? type.getDbKey() : "");
-				i += 1;
-			}
-		ResultSet results = stmt.executeQuery();
-		if (results.next())
-			return Optional.of(new ProjectFile(results));
+			if (!type.equals(EnumFileType.ANY) && type.getLevel() > file.getType().getLevel())
+				types.add(type.getDbKey());
+		Result<Record> rec = ctx.select(FILES.fields()).from(FILES).innerJoin(VERSIONS)
+				.on(FILES.FILEID.eq(VERSIONS.FILEID)).where(FILES.PROJECTID.eq(file.getProject().getProjectId()))
+				.and(FILES.FILEID.gt(file.getFileId())).and(VERSIONS.VERSION.in(file.getVersions()))
+				.and(FILES.TYPE.in(types)).limit(1).fetch();
+		if (rec.size() == 1)
+			return newFile((FilesRecord) rec.get(0));
 		return Optional.empty();
+	}
+
+	public static Project newProject(ProjectsRecord rec) {
+		Result<CategoriesRecord> categories = ctx.selectFrom(CATEGORIES)
+				.where(CATEGORIES.PROJECTID.eq(rec.getProjectid())).fetch();
+		return new Project(rec, categories.getValues(CATEGORIES.CATEGORY));
+	}
+
+	public static Optional<ProjectFile> newFile(FilesRecord rec) throws SQLException {
+		Result<VersionsRecord> versions = ctx.selectFrom(VERSIONS).where(VERSIONS.FILEID.eq(rec.getFileid())).fetch();
+		Result<OptionallibrariesRecord> optionalLibraries = ctx.selectFrom(OPTIONALLIBRARIES)
+				.where(OPTIONALLIBRARIES.FILEID.eq(rec.getFileid())).fetch();
+		Result<RequiredlibrariesRecord> requiredLibraries = ctx.selectFrom(REQUIREDLIBRARIES)
+				.where(REQUIREDLIBRARIES.FILEID.eq(rec.getFileid())).fetch();
+		Result<ProjectsRecord> project = ctx.selectFrom(PROJECTS).where(PROJECTS.PROJECTID.eq(rec.getProjectid()))
+				.fetch();
+		if (project.size() == 1) {
+			List<Project> opts = new ArrayList<>(), reqs = new ArrayList<>();
+			for (Integer opt : optionalLibraries.getValues(OPTIONALLIBRARIES.PROJECTID)) {
+				Optional<Project> p = getProjectFromId(opt);
+				if (p.isPresent())
+					opts.add(p.get());
+			}
+			for (Integer req : requiredLibraries.getValues(OPTIONALLIBRARIES.PROJECTID)) {
+				Optional<Project> p = getProjectFromId(req);
+				if (p.isPresent())
+					reqs.add(p.get());
+			}
+			return Optional.of(
+					new ProjectFile(rec, versions.getValues(VERSIONS.VERSION), opts, reqs, newProject(project.get(0))));
+		}
+
+		return Optional.empty();
+
 	}
 
 }

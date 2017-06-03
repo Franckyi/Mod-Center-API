@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.franckyi.modcenter.api.beans.enums.EnumCategory;
+import com.franckyi.modcenter.api.jooq.tables.records.ProjectsRecord;
 
 /**
  * <p>
@@ -87,6 +88,10 @@ public class Project {
 		this(results.getInt(1), results.getString(2), results.getString(3), results.getInt(4), results.getDate(5),
 				results.getString(6), results.getString(7), results.getString(8),
 				EnumCategory.format(results.getString(9)));
+	}
+
+	public Project(ProjectsRecord rec, List<String> categories) {
+		this(rec.getProjectid(), rec.getName(), rec.getAuthor(), rec.getTotaldl(), rec.getUpdated(), rec.getDescription(), rec.getProjecturl(), rec.getThumbnail(), EnumCategory.toCategories(categories));
 	}
 
 	/**

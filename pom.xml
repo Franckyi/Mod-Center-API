@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.franckyi</groupId>
 	<artifactId>mod-center-api</artifactId>
-	<version>0.1.2</version>
+	<version>0.2.0</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>The official API for the Mod Center database</description>
 	<url>https://github.com/Franckyi/Mod-Center-API</url>
@@ -114,6 +114,21 @@
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<version>1.10.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+			<version>3.9.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq-meta</artifactId>
+			<version>3.9.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq-codegen</artifactId>
+			<version>3.9.3</version>
 		</dependency>
 	</dependencies>
 </project>

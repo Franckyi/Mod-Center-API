@@ -1,13 +1,11 @@
 package com.franckyi.modcenter.api.beans;
 
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.franckyi.modcenter.api.beans.enums.EnumFileType;
-import com.franckyi.modcenter.api.misc.ModCenterUtils;
+import com.franckyi.modcenter.api.jooq.tables.records.FilesRecord;
 
 /**
  * <p>
@@ -22,7 +20,7 @@ import com.franckyi.modcenter.api.misc.ModCenterUtils;
  * <li>The Minecraft version of the file</li>
  * <li>The file downloads number</li>
  * <li>The file URL (as a {@link String})</li>
- * <li>The project ID of the {@link Project} this file comes from</li>
+ * <li>The {@link Project} this file comes from</li>
  * </ul>
  * 
  * @author Franckyi
@@ -35,12 +33,12 @@ public class ProjectFile {
 	private EnumFileType type;
 	private String size;
 	private Date uploaded;
-	private String version;
+	private List<String> versions = new ArrayList<>();
 	private int downloads;
 	private String fileUrl;
-	private List<Integer> optionalLibraries = new ArrayList<>();
-	private List<Integer> requiredLibraries = new ArrayList<>();
-	private int projectId;
+	private List<Project> optionalLibraries = new ArrayList<>();
+	private List<Project> requiredLibraries = new ArrayList<>();
+	private Project project;
 
 	/**
 	 * <p>
@@ -59,20 +57,20 @@ public class ProjectFile {
 	 * @param requiredLibraries
 	 * @param projectId
 	 */
-	public ProjectFile(int fileId, String fileName, EnumFileType type, String size, Date uploaded, String version,
-			int downloads, String fileUrl, List<Integer> optionalLibraries, List<Integer> requiredLibraries,
-			int projectId) {
+	public ProjectFile(int fileId, String fileName, EnumFileType type, String size, Date uploaded, List<String> versions,
+			int downloads, String fileUrl, List<Project> optionalLibraries, List<Project> requiredLibraries,
+			Project project) {
 		this.fileId = fileId;
 		this.fileName = fileName;
 		this.type = type;
 		this.size = size;
 		this.uploaded = uploaded;
-		this.version = version;
+		this.versions = versions;
 		this.downloads = downloads;
 		this.fileUrl = fileUrl;
 		this.optionalLibraries = optionalLibraries;
 		this.requiredLibraries = requiredLibraries;
-		this.projectId = projectId;
+		this.project = project;
 	}
 
 	/**
@@ -83,20 +81,8 @@ public class ProjectFile {
 	public ProjectFile() {
 	}
 
-	/**
-	 * <p>
-	 * A complete ProjectFile using a {@link ResultSet}.
-	 * </p>
-	 * 
-	 * @param results
-	 *            The results of a query
-	 * @throws SQLException
-	 */
-	public ProjectFile(ResultSet results) throws SQLException {
-		this(results.getInt(1), results.getString(2), EnumFileType.toType(results.getString(3)), results.getString(4),
-				results.getDate(5), results.getString(6), results.getInt(7), results.getString(8),
-				ModCenterUtils.toIntList(results.getString(9)), ModCenterUtils.toIntList(results.getString(10)),
-				results.getInt(11));
+	public ProjectFile(FilesRecord r, List<String> versions, List<Project> optionalLibraries, List<Project> requiredLibraries, Project p) {
+		this(r.getFileid(), r.getFilename(), EnumFileType.toType(r.getType()), r.getSize(), r.getUploaded(), versions, r.getDownloads(), r.getFileurl(), optionalLibraries, requiredLibraries, p);
 	}
 
 	/**
@@ -175,18 +161,18 @@ public class ProjectFile {
 	}
 
 	/**
-	 * @return the version
+	 * @return the versions
 	 */
-	public String getVersion() {
-		return version;
+	public List<String> getVersions() {
+		return versions;
 	}
 
 	/**
-	 * @param version
-	 *            the version to set
+	 * @param versions
+	 *            the versions to set
 	 */
-	public void setVersion(String version) {
-		this.version = version;
+	public void setVersions(List<String> versions) {
+		this.versions = versions;
 	}
 
 	/**
@@ -222,7 +208,7 @@ public class ProjectFile {
 	/**
 	 * @return the optionalLibraries
 	 */
-	public List<Integer> getOptionalLibraries() {
+	public List<Project> getOptionalLibraries() {
 		return optionalLibraries;
 	}
 
@@ -230,14 +216,14 @@ public class ProjectFile {
 	 * @param optionalLibraries
 	 *            the optionalLibraries to set
 	 */
-	public void setOptionalLibraries(List<Integer> optionalLibraries) {
+	public void setOptionalLibraries(List<Project> optionalLibraries) {
 		this.optionalLibraries = optionalLibraries;
 	}
 
 	/**
 	 * @return the requiredLibraries
 	 */
-	public List<Integer> getRequiredLibraries() {
+	public List<Project> getRequiredLibraries() {
 		return requiredLibraries;
 	}
 
@@ -245,23 +231,23 @@ public class ProjectFile {
 	 * @param requiredLibraries
 	 *            the requiredLibraries to set
 	 */
-	public void setRequiredLibraries(List<Integer> requiredLibraries) {
+	public void setRequiredLibraries(List<Project> requiredLibraries) {
 		this.requiredLibraries = requiredLibraries;
 	}
 
 	/**
 	 * @return the projectId
 	 */
-	public int getProjectId() {
-		return projectId;
+	public Project getProject() {
+		return project;
 	}
 
 	/**
 	 * @param projectId
 	 *            the projectId to set
 	 */
-	public void setProjectId(int projectId) {
-		this.projectId = projectId;
+	public void setProject(Project project) {
+		this.project = project;
 	}
 
 }

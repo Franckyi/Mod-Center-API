@@ -161,4 +161,14 @@ public enum EnumCategory {
 		return displayText;
 	}
 
+	public static List<EnumCategory> toCategories(List<String> categories) {
+		List<EnumCategory> list = new ArrayList<>();
+		for(String category : categories) {
+			EnumCategory cat = toCategory(category);
+			if(cat != null)
+				list.add(cat);
+		}
+		return list;
+	}
+
 }
