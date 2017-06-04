@@ -77,9 +77,9 @@ public class ModCenterAPI {
 	 */
 	public static Optional<ProjectFile> getFileFromName(String name) throws SQLException {
 		String nameLike = "%" + name + "%";
-		Result<FilesRecord> rec = ctx.selectFrom(FILES).where(FILES.FILENAME.like(nameLike)).fetch();
-		if (rec.size() == 1)
-			return newFile(rec.get(0));
+		Result<FilesRecord> res = ctx.selectFrom(FILES).where(FILES.FILENAME.like(nameLike)).fetch();
+		if (res.size() == 1)
+			return newFile(res.get(0));
 		return Optional.empty();
 	}
 
@@ -98,9 +98,9 @@ public class ModCenterAPI {
 	 */
 	public static List<ProjectFile> getFilesFromProject(Project project, ProjectFileFilter filter) throws SQLException {
 		List<ProjectFile> files = new ArrayList<>();
-		Result<FilesRecord> rec = ctx.selectFrom(FILES).where(FILES.PROJECTID.eq(project.getProjectId()))
+		Result<FilesRecord> res = ctx.selectFrom(FILES).where(FILES.PROJECTID.eq(project.getProjectId()))
 				.and(FILES.TYPE.in(filter.getTypesKeys())).fetch();
-		for (FilesRecord file : rec) {
+		for (FilesRecord file : res) {
 			Result<VersionsRecord> versions = ctx.selectFrom(VERSIONS).where(VERSIONS.FILEID.eq(file.getFileid()))
 					.fetch();
 			if (versions.getValues(VERSIONS.VERSION).contains(filter.getVersion())) {
@@ -124,10 +124,10 @@ public class ModCenterAPI {
 	 * @throws SQLException
 	 */
 	public static Optional<Project> getProjectFromFile(ProjectFile file) throws SQLException {
-		Result<ProjectsRecord> rec = ctx.selectFrom(PROJECTS)
+		Result<ProjectsRecord> res = ctx.selectFrom(PROJECTS)
 				.where(PROJECTS.PROJECTID.eq(file.getProject().getProjectId())).fetch();
-		if (rec.size() == 1)
-			return Optional.of(newProject(rec.get(0)));
+		if (res.size() == 1)
+			return Optional.of(newProject(res.get(0)));
 		return Optional.empty();
 	}
 
@@ -142,9 +142,9 @@ public class ModCenterAPI {
 	 * @throws SQLException
 	 */
 	public static Optional<Project> getProjectFromId(int id) throws SQLException {
-		Result<ProjectsRecord> rec = ctx.selectFrom(PROJECTS).where(PROJECTS.PROJECTID.eq(id)).fetch();
-		if (rec.size() == 1)
-			return Optional.of(newProject(rec.get(0)));
+		Result<ProjectsRecord> res = ctx.selectFrom(PROJECTS).where(PROJECTS.PROJECTID.eq(id)).fetch();
+		if (res.size() == 1)
+			return Optional.of(newProject(res.get(0)));
 		return Optional.empty();
 	}
 
@@ -169,21 +169,16 @@ public class ModCenterAPI {
 		String query = "%" + filter.getQuery() + "%";
 		SortField<?> order = (filter.getOrder()) ? filter.getSortFilter().getField().asc()
 				: filter.getSortFilter().getField().desc();
-		Result<Record1<Integer>> sub = ctx.selectDistinct(FILES.PROJECTID).from(FILES).innerJoin(VERSIONS)
-				.on(FILES.FILEID.eq(VERSIONS.FILEID)).where(VERSIONS.VERSION.like("%" + filter.getVersion() + "%"))
-				.fetch();
-		Result<Record> rec = ctx.selectDistinct(PROJECTS.fields()).from(PROJECTS).innerJoin(CATEGORIES)
-				.on(PROJECTS.PROJECTID.eq(CATEGORIES.PROJECTID)).where(PROJECTS.PROJECTID.in(sub))
+		Result<Record> res = ctx.selectDistinct(PROJECTS.fields()).from(PROJECTS).innerJoin(CATEGORIES)
+				.on(PROJECTS.PROJECTID.eq(CATEGORIES.PROJECTID))
+				.where(PROJECTS.PROJECTID.in(ctx.selectDistinct(FILES.PROJECTID).from(FILES).innerJoin(VERSIONS)
+						.on(FILES.FILEID.eq(VERSIONS.FILEID))
+						.where(VERSIONS.VERSION.like("%" + filter.getVersion() + "%"))))
 				.and((PROJECTS.NAME.like(query)).or(PROJECTS.AUTHOR.like(query)).or(PROJECTS.DESCRIPTION.like(query)))
 				.and(CATEGORIES.CATEGORY.like("%" + filter.getCategory().getDbKey() + "%")).orderBy(order)
 				.limit((page - 1) * count, count).fetch();
-		System.out.println(ctx.selectDistinct(PROJECTS.fields()).from(PROJECTS).innerJoin(CATEGORIES)
-				.on(PROJECTS.PROJECTID.eq(CATEGORIES.PROJECTID)).where(PROJECTS.PROJECTID.in(sub))
-				.and((PROJECTS.NAME.like(query)).or(PROJECTS.AUTHOR.like(query)).or(PROJECTS.DESCRIPTION.like(query)))
-				.and(CATEGORIES.CATEGORY.like("%" + filter.getCategory().getDbKey() + "%")).orderBy(order)
-				.limit((page - 1) * count, count).toString());
-		for (Record record : rec)
-			projects.add(newProject(record));
+		for (Record rec : res)
+			projects.add(newProject(rec));
 		return projects;
 	}
 
@@ -202,15 +197,15 @@ public class ModCenterAPI {
 	 */
 	public static int getProjectsPageNumber(int count, ProjectFilter filter) throws SQLException {
 		String query = "%" + filter.getQuery() + "%";
-		Result<Record1<Integer>> sub = ctx.select(FILES.PROJECTID).from(FILES).innerJoin(VERSIONS)
-				.on(FILES.FILEID.eq(VERSIONS.FILEID)).where(VERSIONS.VERSION.like("%" + filter.getVersion() + "%"))
-				.fetch();
-		Result<Record1<Integer>> rec = ctx.selectCount().from(PROJECTS).innerJoin(CATEGORIES)
-				.on(PROJECTS.PROJECTID.eq(CATEGORIES.PROJECTID)).where(PROJECTS.PROJECTID.in(sub))
+		Result<Record1<Integer>> res = ctx.selectCount().from(PROJECTS).innerJoin(CATEGORIES)
+				.on(PROJECTS.PROJECTID.eq(CATEGORIES.PROJECTID))
+				.where(PROJECTS.PROJECTID.in(
+						ctx.select(FILES.PROJECTID).from(FILES).innerJoin(VERSIONS).on(FILES.FILEID.eq(VERSIONS.FILEID))
+								.where(VERSIONS.VERSION.like("%" + filter.getVersion() + "%"))))
 				.and((PROJECTS.NAME.like(query)).or(PROJECTS.AUTHOR.like(query)).or(PROJECTS.DESCRIPTION.like(query)))
 				.and(CATEGORIES.CATEGORY.eq(filter.getCategory().getDbKey())).fetch();
-		if (rec.size() == 1)
-			return rec.get(0).value1();
+		if (res.size() == 1)
+			return res.get(0).value1();
 		return 0;
 	}
 
@@ -225,8 +220,8 @@ public class ModCenterAPI {
 	 */
 	public static List<String> getVersions() throws SQLException {
 		List<String> list = new ArrayList<>();
-		Result<Record1<String>> rec = ctx.selectDistinct(VERSIONS.VERSION).from(VERSIONS).fetch();
-		for (Record1<String> str : rec)
+		Result<Record1<String>> res = ctx.selectDistinct(VERSIONS.VERSION).from(VERSIONS).fetch();
+		for (Record1<String> str : res)
 			list.add(str.value1());
 		return list;
 	}
@@ -244,10 +239,10 @@ public class ModCenterAPI {
 	 */
 	public static List<String> getVersions(Project project) throws SQLException {
 		List<String> list = new ArrayList<>();
-		Result<Record1<String>> rec = ctx.selectDistinct(VERSIONS.VERSION).from(VERSIONS).innerJoin(FILES)
+		Result<Record1<String>> res = ctx.selectDistinct(VERSIONS.VERSION).from(VERSIONS).innerJoin(FILES)
 				.on(VERSIONS.FILEID.eq(FILES.FILEID)).where(FILES.PROJECTID.eq(project.getProjectId())).fetch();
-		for (Record1<String> str : rec)
-			list.add(str.value1());
+		for (Record1<String> rec : res)
+			list.add(rec.value1());
 		return list;
 	}
 
@@ -307,12 +302,12 @@ public class ModCenterAPI {
 		for (EnumFileType type : EnumFileType.values())
 			if (!type.equals(EnumFileType.ANY) && type.getLevel() > file.getType().getLevel())
 				types.add(type.getDbKey());
-		Result<Record> rec = ctx.select(FILES.fields()).from(FILES).innerJoin(VERSIONS)
+		Result<Record> res = ctx.select(FILES.fields()).from(FILES).innerJoin(VERSIONS)
 				.on(FILES.FILEID.eq(VERSIONS.FILEID)).where(FILES.PROJECTID.eq(file.getProject().getProjectId()))
 				.and(FILES.FILEID.gt(file.getFileId())).and(VERSIONS.VERSION.in(file.getVersions()))
 				.and(FILES.TYPE.in(types)).limit(1).fetch();
-		if (rec.size() == 1)
-			return newFile(rec.get(0));
+		if (res.size() == 1)
+			return newFile(res.get(0));
 		return Optional.empty();
 	}
 
@@ -323,7 +318,8 @@ public class ModCenterAPI {
 	}
 
 	public static Optional<ProjectFile> newFile(Record rec) throws SQLException {
-		Result<VersionsRecord> versions = ctx.selectFrom(VERSIONS).where(VERSIONS.FILEID.eq(rec.get(FILES.FILEID))).fetch();
+		Result<VersionsRecord> versions = ctx.selectFrom(VERSIONS).where(VERSIONS.FILEID.eq(rec.get(FILES.FILEID)))
+				.fetch();
 		Result<OptionallibrariesRecord> optionalLibraries = ctx.selectFrom(OPTIONALLIBRARIES)
 				.where(OPTIONALLIBRARIES.FILEID.eq(rec.get(FILES.FILEID))).fetch();
 		Result<RequiredlibrariesRecord> requiredLibraries = ctx.selectFrom(REQUIREDLIBRARIES)
