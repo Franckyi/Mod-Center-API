@@ -27,31 +27,31 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VersionsRecord extends UpdatableRecordImpl<VersionsRecord> implements Record2<Integer, String> {
 
-    private static final long serialVersionUID = 78202833;
+    private static final long serialVersionUID = 601099429;
 
     /**
-     * Setter for <code>modcenter.versions.fileId</code>.
+     * Setter for <code>franckyi_modcenter.versions.fileId</code>.
      */
     public void setFileid(Integer value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>modcenter.versions.fileId</code>.
+     * Getter for <code>franckyi_modcenter.versions.fileId</code>.
      */
     public Integer getFileid() {
         return (Integer) get(0);
     }
 
     /**
-     * Setter for <code>modcenter.versions.version</code>.
+     * Setter for <code>franckyi_modcenter.versions.version</code>.
      */
     public void setVersion(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>modcenter.versions.version</code>.
+     * Getter for <code>franckyi_modcenter.versions.version</code>.
      */
     public String getVersion() {
         return (String) get(1);

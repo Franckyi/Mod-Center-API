@@ -30,115 +30,115 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class FilesRecord extends UpdatableRecordImpl<FilesRecord> implements Record8<Integer, String, String, String, Date, Integer, String, Integer> {
 
-    private static final long serialVersionUID = 1725628975;
+    private static final long serialVersionUID = -1412223929;
 
     /**
-     * Setter for <code>modcenter.files.fileId</code>.
+     * Setter for <code>franckyi_modcenter.files.fileId</code>.
      */
     public void setFileid(Integer value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>modcenter.files.fileId</code>.
+     * Getter for <code>franckyi_modcenter.files.fileId</code>.
      */
     public Integer getFileid() {
         return (Integer) get(0);
     }
 
     /**
-     * Setter for <code>modcenter.files.fileName</code>.
+     * Setter for <code>franckyi_modcenter.files.fileName</code>.
      */
     public void setFilename(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>modcenter.files.fileName</code>.
+     * Getter for <code>franckyi_modcenter.files.fileName</code>.
      */
     public String getFilename() {
         return (String) get(1);
     }
 
     /**
-     * Setter for <code>modcenter.files.type</code>.
+     * Setter for <code>franckyi_modcenter.files.type</code>.
      */
     public void setType(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>modcenter.files.type</code>.
+     * Getter for <code>franckyi_modcenter.files.type</code>.
      */
     public String getType() {
         return (String) get(2);
     }
 
     /**
-     * Setter for <code>modcenter.files.size</code>.
+     * Setter for <code>franckyi_modcenter.files.size</code>.
      */
     public void setSize(String value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>modcenter.files.size</code>.
+     * Getter for <code>franckyi_modcenter.files.size</code>.
      */
     public String getSize() {
         return (String) get(3);
     }
 
     /**
-     * Setter for <code>modcenter.files.uploaded</code>.
+     * Setter for <code>franckyi_modcenter.files.uploaded</code>.
      */
     public void setUploaded(Date value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>modcenter.files.uploaded</code>.
+     * Getter for <code>franckyi_modcenter.files.uploaded</code>.
      */
     public Date getUploaded() {
         return (Date) get(4);
     }
 
     /**
-     * Setter for <code>modcenter.files.downloads</code>.
+     * Setter for <code>franckyi_modcenter.files.downloads</code>.
      */
     public void setDownloads(Integer value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>modcenter.files.downloads</code>.
+     * Getter for <code>franckyi_modcenter.files.downloads</code>.
      */
     public Integer getDownloads() {
         return (Integer) get(5);
     }
 
     /**
-     * Setter for <code>modcenter.files.fileUrl</code>.
+     * Setter for <code>franckyi_modcenter.files.fileUrl</code>.
      */
     public void setFileurl(String value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>modcenter.files.fileUrl</code>.
+     * Getter for <code>franckyi_modcenter.files.fileUrl</code>.
      */
     public String getFileurl() {
         return (String) get(6);
     }
 
     /**
-     * Setter for <code>modcenter.files.projectId</code>.
+     * Setter for <code>franckyi_modcenter.files.projectId</code>.
      */
     public void setProjectid(Integer value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>modcenter.files.projectId</code>.
+     * Getter for <code>franckyi_modcenter.files.projectId</code>.
      */
     public Integer getProjectid() {
         return (Integer) get(7);

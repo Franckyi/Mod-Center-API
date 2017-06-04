@@ -32,8 +32,8 @@ import com.franckyi.modcenter.api.jooq.tables.records.VersionsRecord;
 
 public class ModCenterAPI {
 
-	private static final String JDBC_CONNECTION = "jdbc:mysql://46.101.97.201/modcenter";
-	private static final String JDBC_USERNAME = "public";
+	private static final String JDBC_CONNECTION = "jdbc:mysql://mysql-franckyi.alwaysdata.net/franckyi_modcenter";
+	private static final String JDBC_USERNAME = "franckyi_public";
 	private static final String JDBC_PASSWORD = "public";
 
 	private static Connection conn;
